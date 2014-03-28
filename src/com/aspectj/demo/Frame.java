@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.JList;
@@ -54,17 +55,20 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.aspectj.analysis.AnalysisTool;
-
 import java.awt.TextArea;
 
 import javax.xml.parsers.*;
 
+import org.aspectj.lang.JoinPoint.StaticPart;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
-public class Frame extends JFrame {
 
+import com.aspectj.analysis.AnalysisTool;
+import com.aspectj.tree.DrawTree;
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
+public class Frame extends JFrame {
 	private JPanel contentPane;
 	private Choice choice;
 
@@ -137,35 +141,52 @@ public class Frame extends JFrame {
 //					list_1.add(filepath);
 //					choice.add(filepath);
 //					choice.add(filepath);
-					//AnalysisTool.analysis(filepath);
+					AnalysisTool.analysis(filepath);
 					
 					/***************读取xml信息***************************************/
 					File analysisFile = new File(filepath);
 					String pathname = analysisFile.getParent()+"\\analysisResult.xml";
-					System.out.println(pathname);
+					
+					try {
+						Thread.sleep(3500);
+					} catch (InterruptedException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					try {
+						FileWriter fw = new FileWriter(pathname, true);
+						fw.write("</functions>");
+						fw.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					String list[] = new String[20]; //保存函数的名字
+					//System.out.println(pathname);
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					try
 					{
 						DocumentBuilder db = dbf.newDocumentBuilder();
 						Document doc = db.parse(pathname);
 
-						NodeList dogList = doc.getElementsByTagName("dog");
-						System.out.println("共有" + dogList.getLength() + "个dog节点");
-						for (int i = 0; i < dogList.getLength(); i++)
+						NodeList startList = doc.getElementsByTagName("start");
+						System.out.println("共有" + startList.getLength() + "个start节点");
+						
+						int j =0 , k = 0;
+						for (int i = 0; i < startList.getLength(); i++)
 						{
-							Node dog = dogList.item(i);
-							Element elem = (Element) dog;
-							System.out.println("id:" + elem.getAttribute("id"));
-							for (Node node = dog.getFirstChild(); node != null; node = node.getNextSibling())
-							{
-								if (node.getNodeType() == Node.ELEMENT_NODE)
-								{
-									String name = node.getNodeName();
-									String value = node.getFirstChild().getNodeValue();
-									System.out.print(name + ":" + value + "\t");
-								}
+							Node start = startList.item(i);
+							String name = start.getTextContent(); 
+							System.out.println(name);
+							for(j = 0; j < k; j++){
+								if(name.equals(list[j]))
+									break;
 							}
-							System.out.println();
+							if(j == k)
+								list[k++] = name;
+						}
+						for(int i = 0; i < k; i++){
+							list_1.add(list[i]);
 						}
 					}
 					catch (Exception e)
@@ -181,13 +202,21 @@ public class Frame extends JFrame {
 		Button button = new Button("\u751F\u6210\u6811\u72B6\u56FE");
 		button.setBounds(91, 73, 87, 30);
 		button.setFont(new Font("黑体", Font.PLAIN, 12));
+		button.addActionListener(
+			new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				DrawTree drawTree = new DrawTree() ;
+				
+			}
+		});
 		panel.add(button);
 		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setToolTipText("");
 		progressBar.setBounds(52, 10, 174, 105);
 		panel.add(progressBar);
-		
+		 
 		Choice choice_1 = new Choice();
 		choice_1.setFont(new Font("黑体", Font.PLAIN, 12));
 		choice_1.setBounds(90, 213, 152, 21);

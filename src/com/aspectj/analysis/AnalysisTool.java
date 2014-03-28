@@ -79,6 +79,25 @@ public class AnalysisTool {
 		// copy analysis.aj to ajFileName
 		copyFile(new File("static/analysis.aj"), new File(filepath + "\\" + ajFileName));
 		
+		// 删除原本的 XML 文件
+		File xmlResultFile = new File(filepath + "\\analysisResult.xml");
+		if (xmlResultFile.exists()) {
+			xmlResultFile.delete();
+		}
+		
+		// 添加 XML 文件头
+		FileWriter fw;
+		try {
+			fw = new FileWriter(xmlResultFile);
+			String xmlHeaderString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<functions>\n";
+			fw.write(xmlHeaderString);
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		// Run analysis
 		runAnalysis(filepath, filename, ajFileName);
 	}
