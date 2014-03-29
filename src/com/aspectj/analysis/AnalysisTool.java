@@ -2,6 +2,8 @@ package com.aspectj.analysis;
 
 import java.io.*;
 
+import com.aspectj.tree.xmlResultTreeNode;
+
 public class AnalysisTool {
 	public static void copyFile(File source, File target) {	
 		InputStream fis = null;
@@ -100,5 +102,10 @@ public class AnalysisTool {
 		
 		// Run analysis
 		runAnalysis(filepath, filename, ajFileName);
+	}
+	
+	public static xmlResultTreeNode[] analysisXMLFile(String filepath) {
+		
+		
 	}
 }
