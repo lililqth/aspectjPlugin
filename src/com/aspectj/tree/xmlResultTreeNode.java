@@ -1,6 +1,4 @@
 package com.aspectj.tree;
-
-
 import java.util.ArrayList;
 
 public class xmlResultTreeNode {

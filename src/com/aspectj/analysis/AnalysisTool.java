@@ -1,6 +1,8 @@
 package com.aspectj.analysis;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Stack;
 
 import com.aspectj.tree.xmlResultTreeNode;
 
@@ -104,8 +106,26 @@ public class AnalysisTool {
 		runAnalysis(filepath, filename, ajFileName);
 	}
 	
-	public static xmlResultTreeNode[] analysisXMLFile(String filepath) {
+	public static ArrayList<xmlResultTreeNode> analysisXMLFile(String filepath) {
+
+		BufferedReader bReader = new BufferedReader(new FileReader(filepath));
 		
+		ArrayList<xmlResultTreeNode> resultNodes = new ArrayList<xmlResultTreeNode>();
+		Stack<xmlResultTreeNode> tmpStack = new Stack<xmlResultTreeNode>();
+		String nodeContent = bReader.readLine();
+		while (!nodeContent.equals("")) {
+			if (nodeContent.startsWith("<start>")) {
+				xmlResultTreeNode tmpNode = new xmlResultTreeNode(nodeContent.replace("<start>", "").replace("</start>", ""));
+				resultNodes.add(tmpNode);
+				tmpStack.push(tmpNode);
+			} 
+			else if(nodeContent.startsWith("<end>")){
+				xmlResultTreeNode childNode = tmpStack.pop();
+				tmpStack.peek().addChild(childNode);
+			}
+			nodeContent = bReader.readLine();
+		}
 		
+		return resultNodes;  // 返回所有节点，其中第一个为根节点。
 	}
 }
