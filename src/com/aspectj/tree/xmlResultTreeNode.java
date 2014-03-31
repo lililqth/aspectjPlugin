@@ -1,10 +1,11 @@
 package com.aspectj.tree;
+
+
 import java.util.ArrayList;
 
 public class xmlResultTreeNode {
 	private String nameString = null;
-	private ArrayList<xmlResultTreeNode> childArrayList = new ArrayList<xmlResultTreeNode>();
-	private xmlResultTreeNode parentNode = null;
+	public ArrayList<xmlResultTreeNode> childArrayList = new ArrayList<xmlResultTreeNode>();
 	public xmlResultTreeNode(String nameString) {
 		// TODO Auto-generated constructor stub
 		this.nameString = nameString;
@@ -20,10 +21,6 @@ public class xmlResultTreeNode {
 	
 	public void addChild(xmlResultTreeNode eNode) {
 		childArrayList.add(eNode);
-	}
-	
-	public xmlResultTreeNode getParent(){
-		return this.parentNode;
 	}
 	
 	public xmlResultTreeNode getChild(int index) {

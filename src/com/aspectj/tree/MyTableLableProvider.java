@@ -14,7 +14,6 @@ class MyTableLableProvider implements ITableLabelProvider{
     public String getColumnText(Object element, int columnIndex) {
     	TreeItem item = (TreeItem)element;
     	String fullName = item.getText();
-    	
     	String acccessLevel = null;
     	String returnValue = null;
     	String className = null;
@@ -41,6 +40,8 @@ class MyTableLableProvider implements ITableLabelProvider{
             return returnValue;
         case 4:
         	return argsString;
+        case 5:
+        	return String.valueOf(item.getItemCount());
         default:
             return "";
         }
