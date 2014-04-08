@@ -1,15 +1,10 @@
 package com.aspectj.tree;
 
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.peer.CanvasPeer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.TreeViewer;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.PaintEvent;
@@ -18,23 +13,20 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.win32.TVHITTESTINFO;
+
 import org.eclipse.swt.layout.*;
 import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
 
-import com.sun.corba.se.impl.interceptors.PICurrent;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 public class DrawTree {
+	private static DrawTree drawTree;
 	private Display display = new Display();
 	Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL
 			| SWT.ON_TOP);
 	Composite composite = null;
 	Composite compositeImage = null;
-	private xmlResultTreeNode head = new xmlResultTreeNode("main");
+	private xmlResultTreeNode head = null;//new xmlResultTreeNode("main");
 	Tree tree = new Tree(shell, SWT.CHECK);// 用于存储树的信息1
 
 	public ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(
@@ -67,7 +59,11 @@ public class DrawTree {
 		okButton.setLayoutData(buttonData);
 		okButton.setText("确认");
 		okButton.addSelectionListener(new MakeFilt());
+	}
 
+	public static DrawTree getInstance(xmlResultTreeNode rootNode) {
+		drawTree = new DrawTree(rootNode);
+		return drawTree;
 	}
 
 	public void createCompositeImage() {
@@ -76,32 +72,34 @@ public class DrawTree {
 		GridData compositeImageData = new GridData(GridData.FILL_VERTICAL);
 		compositeImageData.widthHint = 1000;
 		final Image img = new Image(this.display,
-			"src/com/aspectj/tree/example.png");
+				"src/com/aspectj/tree/example.png");
 		Canvas canvas = new Canvas(compositeImage, SWT.NONE);
 		GridData canvasData = new GridData(GridData.FILL_BOTH);
 		canvasData.widthHint = 1000;
 		canvasData.heightHint = 600;
-		final Rectangle bounds=img.getBounds();
-        int picwidth=bounds.width;//图片宽
-        int picheight=bounds.height;//图片高
-        double r1 = 500.0/(double)picheight;
-        double r2 = 1000.0/(double)picwidth;
-        double ratio = Math.min(r1, r2);
-        final int picWidthFinal = (int)(ratio*picwidth);
-        final int picHeightFinal = (int)(ratio*picheight);
-        final Image scaled = new Image(display,  
-                img.getImageData().scaledTo(picWidthFinal, picHeightFinal));  
+		final Rectangle bounds = img.getBounds();
+		int picwidth = bounds.width;// 图片宽
+		int picheight = bounds.height;// 图片高
+		double r1 = 500.0 / (double) picheight;
+		double r2 = 1000.0 / (double) picwidth;
+		double ratio = Math.min(r1, r2);
+		final int picWidthFinal = (int) (ratio * picwidth);
+		final int picHeightFinal = (int) (ratio * picheight);
+		final Image scaled = new Image(display, img.getImageData().scaledTo(
+				picWidthFinal, picHeightFinal));
 		canvas.setLayoutData(canvasData);
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				e.gc.drawImage(scaled, (1000-picWidthFinal)/2, (550-picHeightFinal)/2);
+				e.gc.drawImage(scaled, (1000 - picWidthFinal) / 2,
+						(550 - picHeightFinal) / 2);
 			}
 		});
 		compositeImage.setLayout(new GridLayout());
 		compositeImage.setLayoutData(compositeImageData);
 	}
 
-	public DrawTree() {
+	private DrawTree(xmlResultTreeNode rootNode) {
+		head = rootNode;
 		viewer.expandAll();
 		shell.setText("函数调用关系 ");
 		GridLayout gridLayout = new GridLayout(2, false);
@@ -114,8 +112,9 @@ public class DrawTree {
 		((GridData) tree.getLayoutData()).exclude = true;
 		tree.setVisible(false);
 		tree.getParent().layout();
+		
 		// 测试代码 向arraylist中插入数据
-		xmlResultTreeNode node = new xmlResultTreeNode(
+		/*xmlResultTreeNode node = new xmlResultTreeNode(
 				"public static void helloworld.helloworld(java.lang.String[])");
 		xmlResultTreeNode node1 = new xmlResultTreeNode(
 				"public static void helloworld.function(int)");
@@ -140,9 +139,9 @@ public class DrawTree {
 		xmlResultTreeNode node3 = new xmlResultTreeNode(
 				"public static string helloworld.getText(java.lang.String[])");
 		node2.childArrayList.add(node3);
-		head.childArrayList.add(node);
+		head.childArrayList.add(node);*/
 		// ////////////////////////////////////////////////////////////////////
-
+		
 		root.setText("public static string helloworld.main(java.lang.String[])");
 		// root.setImage(new Image(display, "F://javaworkspace//src//2.bmp"));
 		root.setExpanded(true);
@@ -172,7 +171,7 @@ public class DrawTree {
 
 			}
 		});
-
+		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();

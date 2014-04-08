@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JList;
 
@@ -55,23 +56,31 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.aspectj.analysis.AnalysisTool;
+import com.aspectj.coding.addcode;
+import com.aspectj.run.Run;
+import com.aspectj.tree.DrawTree;
+import com.aspectj.tree.xmlResultTreeNode;
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
+
 import java.awt.TextArea;
 
 import javax.xml.parsers.*;
 
-import org.aspectj.lang.JoinPoint.StaticPart;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Listener;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
-
-import com.aspectj.analysis.AnalysisTool;
-import com.aspectj.tree.DrawTree;
-import com.sun.org.apache.bcel.internal.generic.NEW;
+import javax.swing.JComboBox;
 
 public class Frame extends JFrame {
+
 	private JPanel contentPane;
 	private Choice choice;
-
+	private String parentpath; //文件路径
+	private String javaname;
+	ArrayList<xmlResultTreeNode> result = null;
 	/**
 	 * Launch the application.
 	 */
@@ -121,6 +130,9 @@ public class Frame extends JFrame {
 		list_1.setFont(new Font("黑体", Font.PLAIN, 12));
 		list_1.setMultipleSelections(true);
 		list_1.setMultipleMode(true);
+		
+		
+    
 		panel.add(list_1);
 		
 		Label label = new Label("\u51FD\u6570\u5217\u8868");
@@ -134,9 +146,11 @@ public class Frame extends JFrame {
 		openbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser file = new JFileChooser("C:");
+//				file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				if(file.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
 					File fl = file.getSelectedFile();
 					String filepath = fl.getAbsolutePath(); 
+					javaname = filepath; 
 					System.out.println(filepath); 
 //					list_1.add(filepath);
 //					choice.add(filepath);
@@ -145,10 +159,11 @@ public class Frame extends JFrame {
 					
 					/***************读取xml信息***************************************/
 					File analysisFile = new File(filepath);
+					parentpath = analysisFile.getParent();
 					String pathname = analysisFile.getParent()+"\\analysisResult.xml";
 					
 					try {
-						Thread.sleep(3500);
+						Thread.sleep(2500);
 					} catch (InterruptedException e2) {
 						// TODO Auto-generated catch block
 						e2.printStackTrace();
@@ -179,12 +194,12 @@ public class Frame extends JFrame {
 							String name = start.getTextContent(); 
 							System.out.println(name);
 							for(j = 0; j < k; j++){
-								if(name.equals(list[j]))
+								if(name.equals(list[j])==true)
 									break;
 							}
 							if(j == k)
 								list[k++] = name;
-						}
+						}//去重（去除文件名中重复的部分）
 						for(int i = 0; i < k; i++){
 							list_1.add(list[i]);
 						}
@@ -202,33 +217,60 @@ public class Frame extends JFrame {
 		Button button = new Button("\u751F\u6210\u6811\u72B6\u56FE");
 		button.setBounds(91, 73, 87, 30);
 		button.setFont(new Font("黑体", Font.PLAIN, 12));
+		 
 		button.addActionListener(
-			new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) 
-			{
-				DrawTree drawTree = new DrawTree() ;
-				
-			}
-		});
+				new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) 
+				{
+					try {
+						result = AnalysisTool.analysisXMLFile(parentpath+"\\analysisResult.xml");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					DrawTree.getInstance(result.get(0));
+				}
+			});
 		panel.add(button);
 		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setToolTipText("");
 		progressBar.setBounds(52, 10, 174, 105);
 		panel.add(progressBar);
-		 
-		Choice choice_1 = new Choice();
+		
+		final Choice choice_1 = new Choice();
 		choice_1.setFont(new Font("黑体", Font.PLAIN, 12));
 		choice_1.setBounds(90, 213, 152, 21);
 		panel.add(choice_1);
 		
-		TextArea textArea = new TextArea();
+		final TextArea textArea = new TextArea();
 		textArea.setBounds(52, 256, 190, 115);
 		panel.add(textArea);
 		
 		Button button_1 = new Button("\u63D0\u4EA4\u4EE3\u7801");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String active = choice.getSelectedItem();
+				String way = choice_1.getSelectedItem();
+				String selectname[] = new String[100];
+				
+				String content = textArea.getText();
+				
+				selectname = list_1.getSelectedItems();
+				try {
+					addcode.writeaj(parentpath, active, way, selectname, content);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+//				for(int i = 0; i < selectname.length; i++){
+//					System.out.println(selectname[i]);
+//				}
+			}
+		});
 		button_1.setFont(new Font("黑体", Font.PLAIN, 12));
-		button_1.setBounds(106, 386, 87, 30);
+		button_1.setBounds(52, 386, 87, 30);
 		panel.add(button_1);
 		
 		Label label_1 = new Label("Active");
@@ -242,6 +284,17 @@ public class Frame extends JFrame {
 		label_2.setAlignment(Label.CENTER);
 		label_2.setBounds(39, 211, 45, 23);
 		panel.add(label_2);
+		
+		Button button_2 = new Button("\u7F16\u8BD1\u6267\u884C");
+		button_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Run.runAnalysis("F:\\java\\helloworld", "helloworld.java", "add.aj");
+				Run.runAnalysis(parentpath, javaname, ".aj");
+			}	
+		});
+		button_2.setFont(new Font("黑体", Font.PLAIN, 12));
+		button_2.setBounds(155, 386, 87, 30);
+		panel.add(button_2);
 		
 		JProgressBar progressBar_1 = new JProgressBar();
 		progressBar_1.setToolTipText("");

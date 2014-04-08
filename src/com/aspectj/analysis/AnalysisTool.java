@@ -42,7 +42,7 @@ public class AnalysisTool {
 		
 		System.setProperty("user.dir", filepath);
 		
-		String command = "cmd.exe /c start ajc " + filename + " " + ajFileName;
+		String command = "cmd.exe /c  ajc " + filename + " " + ajFileName;
 		try {
 			Runtime.getRuntime().exec(command, null, new File(filepath));
 		} catch (IOException e) {
@@ -57,7 +57,7 @@ public class AnalysisTool {
 			e1.printStackTrace();
 		}
 
-		command = "cmd.exe /c start java -cp \".;%CLASSPATH%\" " 
+		command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " 
 				+ filename.substring(0, filename.indexOf(".java")) + " " 
 				+ ajFileName.substring(0, ajFileName.indexOf(".aj"));
 		
@@ -83,13 +83,13 @@ public class AnalysisTool {
 		// copy analysis.aj to ajFileName
 		copyFile(new File("static/analysis.aj"), new File(filepath + "\\" + ajFileName));
 		
-		// É¾³ýÔ­±¾µÄ XML ÎÄ¼þ
+		// åˆ é™¤åŽŸæœ¬çš„ XML æ–‡ä»¶
 		File xmlResultFile = new File(filepath + "\\analysisResult.xml");
 		if (xmlResultFile.exists()) {
 			xmlResultFile.delete();
 		}
 		
-		// Ìí¼Ó XML ÎÄ¼þÍ·
+		// æ·»åŠ  XML æ–‡ä»¶å¤´
 		FileWriter fw;
 		try {
 			fw = new FileWriter(xmlResultFile);
@@ -106,14 +106,15 @@ public class AnalysisTool {
 		runAnalysis(filepath, filename, ajFileName);
 	}
 	
-	public static ArrayList<xmlResultTreeNode> analysisXMLFile(String filepath) {
+	public static ArrayList<xmlResultTreeNode> analysisXMLFile(String filepath) throws IOException {
 
 		BufferedReader bReader = new BufferedReader(new FileReader(filepath));
 		
 		ArrayList<xmlResultTreeNode> resultNodes = new ArrayList<xmlResultTreeNode>();
 		Stack<xmlResultTreeNode> tmpStack = new Stack<xmlResultTreeNode>();
 		String nodeContent = bReader.readLine();
-		while (!nodeContent.equals("")) {
+		// while ((nodeContent != null)&&(!nodeContent.equals(""))) {
+		while (nodeContent != null) {
 			if (nodeContent.startsWith("<start>")) {
 				xmlResultTreeNode tmpNode = new xmlResultTreeNode(nodeContent.replace("<start>", "").replace("</start>", ""));
 				resultNodes.add(tmpNode);
@@ -121,11 +122,13 @@ public class AnalysisTool {
 			} 
 			else if(nodeContent.startsWith("<end>")){
 				xmlResultTreeNode childNode = tmpStack.pop();
-				tmpStack.peek().addChild(childNode);
+				if (!tmpStack.empty()) {
+					tmpStack.peek().addChild(childNode);
+				}
 			}
 			nodeContent = bReader.readLine();
 		}
 		
-		return resultNodes;  // ·µ»ØËùÓÐ½Úµã£¬ÆäÖÐµÚÒ»¸öÎª¸ù½Úµã¡£
+		return resultNodes;  // è¿”å›žæ‰€æœ‰èŠ‚ç‚¹ï¼Œå…¶ä¸­ç¬¬ä¸€ä¸ªä¸ºæ ¹èŠ‚ç‚¹ã€‚
 	}
 }
