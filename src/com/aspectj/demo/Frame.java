@@ -61,7 +61,7 @@ import com.aspectj.coding.addcode;
 import com.aspectj.run.Run;
 import com.aspectj.tree.DrawTree;
 import com.aspectj.tree.xmlResultTreeNode;
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
+
 
 import java.awt.TextArea;
 
@@ -73,6 +73,7 @@ import org.w3c.dom.*;
 import org.xml.sax.*;
 
 import javax.swing.JComboBox;
+import java.awt.Scrollbar;
 
 public class Frame extends JFrame {
 
@@ -80,10 +81,25 @@ public class Frame extends JFrame {
 	private Choice choice;
 	private String parentpath; //文件路径
 	private String javaname;
+	private String list[] = new String[1000]; //保存函数的名字
+	private int functiontime[] = new int[1000]; //保存了对应函数出现的次数
+	private static int functionlenth = 0;
 	ArrayList<xmlResultTreeNode> result = null;
 	/**
 	 * Launch the application.
 	 */
+	public String getfunctionnamearray(){
+		return list[1000];
+	} //返回函数的名字
+	
+	public int getfunctiontimearray(){
+		return functiontime[1000];
+	} //返回函数的名字对应出现的次数
+	
+	public int getfunctionlenth(){
+		return functionlenth;
+	} //返回函数的个数
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -176,7 +192,8 @@ public class Frame extends JFrame {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					String list[] = new String[20]; //保存函数的名字
+					
+					
 					//System.out.println(pathname);
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					try
@@ -194,15 +211,20 @@ public class Frame extends JFrame {
 							String name = start.getTextContent(); 
 							System.out.println(name);
 							for(j = 0; j < k; j++){
-								if(name.equals(list[j])==true)
+								if(name.equals(list[j])==true){
+									functiontime[j]++;
 									break;
+								}
 							}
-							if(j == k)
+							if(j == k){
+								functiontime[k] = 1;
 								list[k++] = name;
+							}
 						}//去重（去除文件名中重复的部分）
 						for(int i = 0; i < k; i++){
 							list_1.add(list[i]);
 						}
+						functionlenth = k;
 					}
 					catch (Exception e)
 					{
@@ -300,6 +322,10 @@ public class Frame extends JFrame {
 		progressBar_1.setToolTipText("");
 		progressBar_1.setBounds(34, 142, 227, 287);
 		panel.add(progressBar_1);
+		
+		JList list = new JList();
+		list.setBounds(282, 73, 1, 1);
+		panel.add(list);
 		choice_1.add("execution");
 		choice_1.add("call");
 		
