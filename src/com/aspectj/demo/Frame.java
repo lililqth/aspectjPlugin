@@ -81,22 +81,22 @@ public class Frame extends JFrame {
 	private Choice choice;
 	private String parentpath; //文件路径
 	private String javaname;
-	private String list[] = new String[1000]; //保存函数的名字
-	private int functiontime[] = new int[1000]; //保存了对应函数出现的次数
+	private static String list[] = new String[1000]; //保存函数的名字
+	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
 	private static int functionlenth = 0;
 	ArrayList<xmlResultTreeNode> result = null;
 	/**
 	 * Launch the application.
 	 */
-	public String getfunctionnamearray(){
-		return list[1000];
+	public static String[] getfunctionnamearray(){
+		return list;
 	} //返回函数的名字
 	
-	public int getfunctiontimearray(){
-		return functiontime[1000];
+	public static int[]  getfunctiontimearray(){
+		return functiontime;
 	} //返回函数的名字对应出现的次数
 	
-	public int getfunctionlenth(){
+	public static int getfunctionlenth(){
 		return functionlenth;
 	} //返回函数的个数
 	

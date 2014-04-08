@@ -19,6 +19,10 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
 
+import com.aspectj.demo.Frame;
+
+import sun.org.mozilla.javascript.internal.ast.ParenthesizedExpression;
+
 public class DrawTree {
 	private static DrawTree drawTree;
 	private Display display = new Display();
@@ -27,8 +31,7 @@ public class DrawTree {
 	Composite composite = null;
 	Composite compositeImage = null;
 	private xmlResultTreeNode head = null;//new xmlResultTreeNode("main");
-	Tree tree = new Tree(shell, SWT.CHECK);// 用于存储树的信息1
-
+	Tree tree = new Tree(shell, SWT.CHECK);// 用于存储树的信息
 	public ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(
 			shell,// 用于显示树
 			SWT.BORDER);
@@ -39,7 +42,7 @@ public class DrawTree {
 
 	Text ruleInput = null;
 	TreeFilter filter = null;
-
+	
 	public void createComposite() {
 		// 添加文本编辑区域
 		composite = new Composite(shell, SWT.BORDER);
@@ -99,6 +102,7 @@ public class DrawTree {
 	}
 
 	private DrawTree(xmlResultTreeNode rootNode) {
+		
 		head = rootNode;
 		viewer.expandAll();
 		shell.setText("函数调用关系 ");
@@ -113,8 +117,8 @@ public class DrawTree {
 		tree.setVisible(false);
 		tree.getParent().layout();
 		
-		// 测试代码 向arraylist中插入数据
-		/*xmlResultTreeNode node = new xmlResultTreeNode(
+		/* 测试代码 向arraylist中插入数据
+		xmlResultTreeNode node = new xmlResultTreeNode(
 				"public static void helloworld.helloworld(java.lang.String[])");
 		xmlResultTreeNode node1 = new xmlResultTreeNode(
 				"public static void helloworld.function(int)");
@@ -139,26 +143,26 @@ public class DrawTree {
 		xmlResultTreeNode node3 = new xmlResultTreeNode(
 				"public static string helloworld.getText(java.lang.String[])");
 		node2.childArrayList.add(node3);
-		head.childArrayList.add(node);*/
-		// ////////////////////////////////////////////////////////////////////
+		head.childArrayList.add(node);
 		
 		root.setText("public static string helloworld.main(java.lang.String[])");
-		// root.setImage(new Image(display, "F://javaworkspace//src//2.bmp"));
+		 root.setImage(new Image(display, "F://javaworkspace//src//2.bmp"));*/
 		root.setExpanded(true);
 
 		// 遍历arraylist并生成树
 		traverse(head, root);
 		makePic pic = new makePic(this);
-		shell.setSize(820, 600);
+		shell.setSize(920, 600);
 		shell.open();
+		
 		// 创建表格
 		viewer.getTree().setHeaderVisible(true);
 		viewer.getTree().setLinesVisible(true);
-
 		makeColumn();
 		viewer.setContentProvider(new MyTreeContenetProvider());
 		viewer.setLabelProvider(new MyTableLableProvider());
 		viewer.setInput(rootRoot);
+		
 		// 创建右键菜单
 		MyActionGroup actionGroup = new MyActionGroup(viewer, this);
 		actionGroup.fillContextMenu(new MenuManager());
@@ -198,11 +202,14 @@ public class DrawTree {
 		column = new TreeColumn(viewer.getTree(), SWT.LEFT);
 		column.setText("子节点数量");
 		column.setWidth(100);
-
+		column = new TreeColumn(viewer.getTree(), SWT.LEFT);
+		column.setText("调用次数");
+		column.setWidth(100);
 	}
 
 	// 遍历arraylist生成树
 	void traverse(xmlResultTreeNode head, TreeItem item) {
+		item.setText(head.getName());
 		int childNum = head.getNumOfChild();
 		if (childNum == 0) {
 			return;
@@ -210,7 +217,7 @@ public class DrawTree {
 		for (int i = 0; i < childNum; i++) {
 			xmlResultTreeNode node = head.getChild(i);
 			TreeItem subItem = new TreeItem(item, SWT.CHECK);
-			subItem.setText(node.getName());
+			//subItem.setText(node.getName());
 			subItem.setExpanded(true);
 			// subItem.setImage(new Image(display,
 			// "F://javaworkspace//src//1.gif"));

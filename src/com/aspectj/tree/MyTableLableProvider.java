@@ -5,8 +5,12 @@ import java.util.regex.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TreeItem;
 
-class MyTableLableProvider implements ITableLabelProvider{
+import com.aspectj.demo.Frame;
 
+class MyTableLableProvider implements ITableLabelProvider{
+	String functionName[] = Frame.getfunctionnamearray();;
+	int functionTime[] = Frame.getfunctiontimearray();
+	int functionLength = Frame.getfunctionlenth();
     public Image getColumnImage(Object element, int columnIndex) {
         return null;
     }
@@ -19,6 +23,7 @@ class MyTableLableProvider implements ITableLabelProvider{
     	String className = null;
     	String funcName = null;
     	String argsString = null;
+    	int functionNum = 0;
     	Pattern p = Pattern.compile("^(public|private|protected) (static )+(.*) (.*)\\.(.*)\\((.*)\\)$");
     	Matcher m1 = p.matcher(fullName);
     	while (m1.find()) {
@@ -28,7 +33,12 @@ class MyTableLableProvider implements ITableLabelProvider{
 			funcName = m1.group(5);
 			argsString = m1.group(6);
 		}
-    	
+    	for (int i=0; i<functionLength; i++) {
+			if (fullName.equals(functionName[i])) {
+				functionNum = functionTime[i];
+				break;
+			}
+		}
         switch (columnIndex) {
         case 0:
         	return className;
@@ -42,6 +52,8 @@ class MyTableLableProvider implements ITableLabelProvider{
         	return argsString;
         case 5:
         	return String.valueOf(item.getItemCount());
+        case 6:
+        	return String.valueOf(functionNum);
         default:
             return "";
         }
