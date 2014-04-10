@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import com.aspectj.demo.Frame;
 import com.aspectj.tree.xmlResultTreeNode;
 
 public class AnalysisTool {
@@ -42,9 +43,10 @@ public class AnalysisTool {
 		
 		System.setProperty("user.dir", filepath);
 		
-		String command = "cmd.exe /c  ajc " + filename + " " + ajFileName;
+		String command = "cmd.exe /c  ajc " + filename + " " + ajFileName +" "+ Frame.packagename;
 		try {
 			Runtime.getRuntime().exec(command, null, new File(filepath));
+			System.out.println(command);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -63,7 +65,6 @@ public class AnalysisTool {
 		
 		try {
 			Runtime.getRuntime().exec(command, null, new File(filepath));
-			System.out.println(command);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

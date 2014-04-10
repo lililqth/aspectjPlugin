@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.aspectj.coding.addcode;
+import com.aspectj.demo.Frame;
 
 
 public class Run {
@@ -13,7 +14,7 @@ public class Run {
 		
 		System.setProperty("user.dir", filepath);
 		
-		String command = "cmd.exe /c ajc " + "*.java";
+		String command = "cmd.exe /c ajc " + "*.java" + " " + Frame.packagename;
 		for(int i = 0;i < addcode.count; i++){
 			command += " add" + i +".aj";
 		}

@@ -81,6 +81,7 @@ public class Frame extends JFrame {
 	private Choice choice;
 	private String parentpath; //文件路径
 	private String javaname;
+	public static String packagename;//保存着包的名字
 	private String list[] = new String[1000]; //保存函数的名字
 	private int functiontime[] = new int[1000]; //保存了对应函数出现的次数
 	private static int functionlenth = 0;
@@ -157,8 +158,8 @@ public class Frame extends JFrame {
 		label.setAlignment(Label.CENTER);
 		panel.add(label);
 		
-		Button openbutton = new Button("\u8F7D\u5165\u6587\u4EF6");
-		openbutton.setBounds(91, 26, 87, 30);
+		Button openbutton = new Button("\u8F7D\u5165\u4E3B\u7C7B");
+		openbutton.setBounds(150, 33, 92, 30);
 		openbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser file = new JFileChooser("C:");
@@ -237,7 +238,7 @@ public class Frame extends JFrame {
 		panel.add(openbutton);
 		
 		Button button = new Button("\u751F\u6210\u6811\u72B6\u56FE");
-		button.setBounds(91, 73, 87, 30);
+		button.setBounds(459, 395, 87, 30);
 		button.setFont(new Font("黑体", Font.PLAIN, 12));
 		 
 		button.addActionListener(
@@ -253,11 +254,45 @@ public class Frame extends JFrame {
 					DrawTree.getInstance(result.get(0));
 				}
 			});
+		
+		final TextField textField = new TextField();
+		textField.setBounds(135, 86, 107, 23);
+		panel.add(textField);
+		
+		Button button_3 = new Button("\u6DFB\u52A0package\u8DEF\u5F84");
+		button_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser file = new JFileChooser("C:");
+				file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if(file.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+					File fl = file.getSelectedFile();
+					String filepath = fl.getAbsolutePath(); 
+					if(packagename == null)
+						packagename = filepath + "\\*.java ";
+					else
+						packagename += " "+ filepath + "\\*.java";
+					System.out.println(packagename); 
+					filepath = (textField.getText() + ";") + filepath;
+					textField.setText(filepath);
+					}
+			}
+		});
+		button_3.setFont(new Font("黑体", Font.PLAIN, 12));
+		button_3.setBounds(39, 33, 107, 30);
+		panel.add(button_3);
 		panel.add(button);
+		
+		Label label_3 = new Label("Package\u8DEF\u5F84");
+		label_3.setFont(new Font("黑体", Font.PLAIN, 12));
+		label_3.setAlignment(Label.CENTER);
+		label_3.setBounds(39, 86, 92, 23);
+		panel.add(label_3);
+		
+		
 		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setToolTipText("");
-		progressBar.setBounds(52, 10, 174, 105);
+		progressBar.setBounds(30, 10, 222, 122);
 		panel.add(progressBar);
 		
 		final Choice choice_1 = new Choice();
@@ -320,7 +355,7 @@ public class Frame extends JFrame {
 		
 		JProgressBar progressBar_1 = new JProgressBar();
 		progressBar_1.setToolTipText("");
-		progressBar_1.setBounds(34, 142, 227, 287);
+		progressBar_1.setBounds(30, 142, 227, 287);
 		panel.add(progressBar_1);
 		
 		JList list = new JList();
