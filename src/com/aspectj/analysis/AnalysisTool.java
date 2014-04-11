@@ -60,8 +60,7 @@ public class AnalysisTool {
 		}
 
 		command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " 
-				+ filename.substring(0, filename.indexOf(".java")) + " " 
-				+ ajFileName.substring(0, ajFileName.indexOf(".aj"));
+				+ filename.substring(0, filename.indexOf(".java"));
 		
 		try {
 			Runtime.getRuntime().exec(command, null, new File(filepath));

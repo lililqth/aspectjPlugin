@@ -1,5 +1,8 @@
 package com.aspectj.tree;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.TreeItem;
@@ -12,11 +15,16 @@ public class TreeFilter extends ViewerFilter {
 	}
 
 	private boolean judge(TreeItem currentItem) {
-
+		
 		for (String line : lines) {
-			if (currentItem.getText().contains(line)) {
+			/*if (currentItem.getText().contains(line)) {
 				return true;
-			}// false表示不显示
+			}// false表示不显示*/
+			Pattern p=Pattern.compile(line);
+			Matcher m=p.matcher(currentItem.getText()); 
+			if(m.find()){
+				return true;
+			}
 		}
 		TreeItem[] childrenItems = currentItem.getItems();
 		boolean flag = false;

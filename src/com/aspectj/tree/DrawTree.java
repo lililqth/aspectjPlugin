@@ -230,7 +230,6 @@ public class DrawTree {
 		boolean flag = true;
 
 		public void widgetSelected(SelectionEvent e) {
-
 			String textString = ruleInput.getText();
 			lines = textString.split("\n");
 			int numOfLines = lines.length;

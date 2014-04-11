@@ -81,14 +81,12 @@ public class Frame extends JFrame {
 	private Choice choice;
 	private String parentpath; //文件路径
 	private String javaname;
-<<<<<<< HEAD
+
 	public static String packagename;//保存着包的名字
-	private String list[] = new String[1000]; //保存函数的名字
-	private int functiontime[] = new int[1000]; //保存了对应函数出现的次数
-=======
 	private static String list[] = new String[1000]; //保存函数的名字
 	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
->>>>>>> 441aad110a5c31e4b203df18757aa0c7b6582f57
+
+
 	private static int functionlenth = 0;
 	ArrayList<xmlResultTreeNode> result = null;
 	/**
