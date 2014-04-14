@@ -85,10 +85,11 @@ public class Frame extends JFrame {
 	public static String packagename;//保存着包的名字
 	private static String list[] = new String[1000]; //保存函数的名字
 	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
-
+	
 
 	private static int functionlenth = 0;
 	ArrayList<xmlResultTreeNode> result = null;
+	TextArea textArea_1 = null;
 	/**
 	 * Launch the application.
 	 */
@@ -121,6 +122,7 @@ public class Frame extends JFrame {
 	 * Create the frame.
 	 */
 	public Frame() {
+		
 		setTitle("Aspectj Plugin");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 661, 488);
@@ -146,7 +148,7 @@ public class Frame extends JFrame {
 		panel.add(choice);
 		
 		final List list_1 = new List();
-		list_1.setBounds(342, 10, 283, 379);
+		list_1.setBounds(342, 10, 283, 176);
 		list_1.setFont(new Font("黑体", Font.PLAIN, 12));
 		list_1.setMultipleSelections(true);
 		list_1.setMultipleMode(true);
@@ -260,8 +262,7 @@ public class Frame extends JFrame {
 		
 		final TextField textField = new TextField();
 		textField.setBounds(135, 86, 107, 23);
-		panel.add(textField);
-		
+		panel.add(textField); 
 		Button button_3 = new Button("\u6DFB\u52A0package\u8DEF\u5F84");
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -346,12 +347,7 @@ public class Frame extends JFrame {
 		panel.add(label_2);
 		
 		Button button_2 = new Button("\u7F16\u8BD1\u6267\u884C");
-		button_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//Run.runAnalysis("F:\\java\\helloworld", "helloworld.java", "add.aj");
-				Run.runAnalysis(parentpath, javaname, ".aj");
-			}	
-		});
+		
 		button_2.setFont(new Font("黑体", Font.PLAIN, 12));
 		button_2.setBounds(155, 386, 87, 30);
 		panel.add(button_2);
@@ -364,6 +360,17 @@ public class Frame extends JFrame {
 		JList list = new JList();
 		list.setBounds(282, 73, 1, 1);
 		panel.add(list);
+		
+		textArea_1 = new TextArea();
+		textArea_1.setBounds(342, 201, 283, 170);
+		panel.add(textArea_1);
+		button_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Run.runAnalysis("F:\\java\\helloworld", "helloworld.java", "add.aj");
+				Run.runAnalysis(parentpath, javaname, ".aj", textArea_1);
+			}	
+		});
+		
 		choice_1.add("execution");
 		choice_1.add("call");
 		
