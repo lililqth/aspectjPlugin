@@ -125,14 +125,14 @@ public class Frame extends JFrame {
 		
 		setTitle("Aspectj Plugin");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 661, 488);
+		setBounds(100, 100, 849, 488);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 10, 635, 439);
+		panel.setBounds(0, 10, 800, 439);
 		panel.setForeground(SystemColor.activeCaptionText);
 		contentPane.add(panel);
 		
@@ -148,7 +148,7 @@ public class Frame extends JFrame {
 		panel.add(choice);
 		
 		final List list_1 = new List();
-		list_1.setBounds(342, 10, 283, 176);
+		list_1.setBounds(342, 10, 448, 176);
 		list_1.setFont(new Font("ºÚÌå", Font.PLAIN, 12));
 		list_1.setMultipleSelections(true);
 		list_1.setMultipleMode(true);
@@ -362,8 +362,14 @@ public class Frame extends JFrame {
 		panel.add(list);
 		
 		textArea_1 = new TextArea();
-		textArea_1.setBounds(342, 201, 283, 170);
+		textArea_1.setBounds(342, 213, 448, 170);
 		panel.add(textArea_1);
+		
+		Label label_4 = new Label("\u8F93\u51FA");
+		label_4.setFont(new Font("ºÚÌå", Font.PLAIN, 12));
+		label_4.setAlignment(Label.CENTER);
+		label_4.setBounds(266, 201, 70, 23);
+		panel.add(label_4);
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//Run.runAnalysis("F:\\java\\helloworld", "helloworld.java", "add.aj");

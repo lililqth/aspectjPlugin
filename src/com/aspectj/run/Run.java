@@ -36,9 +36,8 @@ public class Run {
 			e1.printStackTrace();
 		}
 		// command = "ping www.baidu.com";
-		command = "cmd.exe /c java -classpath \""
-				+ filename.substring(0, filename.indexOf(".java"));
-		command = "cmd.exe /c java -classpath \"D:\\Desktop\\Test\\src\" HelloWorld";
+		command = "cmd.exe /c java -classpath \"" + filename.substring(0, filename.lastIndexOf('\\'))
+				+"\" " + filename.substring(filename.lastIndexOf('\\')+1, filename.indexOf(".java"));
 		try {
 			Process p = Runtime.getRuntime().exec(command);
 			InputStream is = p.getInputStream();
