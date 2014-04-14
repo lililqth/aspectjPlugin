@@ -149,15 +149,15 @@ public class AnalysisTool {
 		return resultNodes;  
 	}
 
-	/** getAllFunctions
-	 * 获取某个 java 文件中所有的函数名
+	/** _getAllFunctions
+	 * 获取某个 java 文件中所有的函数名(内部函数)
 	 * @param pathname java 文件的路径
 	 * @return 所有的函数名的数组，类型为 ArrayList<String>
 	 */
-	public static ArrayList<String> getAllFunctions(String pathname)
+	public static ArrayList<String> _getAllFunctions(String pathname)
 	{
 		// 编写正则表达式并编译
-		String regex = "(public|private|protected)+\\s*(static)?\\s*\\S+\\s*\\S+\\s*\\(.*?\\)";
+		String regex = "(public|private|protected)+\\s*(static)?\\s*\\S+\\s*\\S+\\s*\\(.*?\\)\\s*(\\{|extend|throws)+?";
 		Pattern re = Pattern.compile(regex);
 		
 		// 读取 java 文件内容
@@ -184,9 +184,42 @@ public class AnalysisTool {
 		// 将匹配方法加入 ArrayList
 		Matcher matcher = re.matcher(fileContent);
 		while (matcher.find()) {
-			result.add(matcher.group());
+			result.add(matcher.group().replace("{", "").replace("extend", "").replace("throws", "").trim());
 		}
 		// 返回结果
 		return result;
+	}
+
+	/** getAllFunctions
+	 * 获取某个目录下所有 java 文件中的函数
+	 * @param path 目录路径
+	 * @return 所有的函数名的数组，类型为 ArrayList<String>，文件名和函数名用 "||" 分割
+	 * @throws Exception 传入的不是目录而是文件
+	 */
+	public static ArrayList<String> getAllFunctions(String path) throws Exception 
+	{
+		// 判断传入参数是否为目录地址
+		File dir = new File(path);
+		if (!dir.isDirectory()) {
+			throw new Exception("传入的应当是一个目录");
+		}
+		
+		ArrayList<String> funcArrayList = new ArrayList<String>();
+		
+		for (File file : dir.listFiles()) {
+			if (file.isDirectory()) {
+				// 如果是目录，则递归
+				funcArrayList.addAll(getAllFunctions(file.getAbsolutePath()));
+			} else if (file.getAbsolutePath().endsWith(".java")) {
+				// 如果是是文件，则判断是否为 .java 结尾，是就分析
+				ArrayList<String> tmpArrayList = _getAllFunctions(file.getAbsolutePath());
+				String fileName = file.getName();
+				for (String string : tmpArrayList) {
+					// 将每个文件的函数加上类名
+					funcArrayList.add(fileName + "||" + string);
+				}
+			}
+		}
+		return funcArrayList;
 	}
 }
