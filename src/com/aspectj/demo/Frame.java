@@ -82,6 +82,10 @@ public class Frame extends JFrame {
 	private String parentpath; //文件路径
 	private String javaname;
 
+	Button button = new Button("\u751F\u6210\u6811\u72B6\u56FE");
+	Button button_1 = new Button("\u63D0\u4EA4\u4EE3\u7801");
+	Button button_2 = new Button("\u7F16\u8BD1\u6267\u884C");
+	
 	public static String packagename;//保存着包的名字
 	private static String list[] = new String[1000]; //保存函数的名字
 	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
@@ -163,7 +167,8 @@ public class Frame extends JFrame {
 		label.setAlignment(Label.CENTER);
 		panel.add(label);
 		
-		Button openbutton = new Button("\u8F7D\u5165\u4E3B\u7C7B");
+		final Button openbutton = new Button("\u8F7D\u5165\u4E3B\u7C7B");
+		openbutton.setEnabled(false);
 		openbutton.setBounds(150, 33, 92, 30);
 		openbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -237,13 +242,18 @@ public class Frame extends JFrame {
 						e.printStackTrace();
 					}
 				}
+				button.enable(true);
+				button_1.enable(true);
+				button_2.enable(true);
 			}
+		
 		});
 		openbutton.setFont(new Font("黑体", Font.PLAIN, 12));
 		panel.add(openbutton);
 		
-		Button button = new Button("\u751F\u6210\u6811\u72B6\u56FE");
-		button.setBounds(459, 395, 87, 30);
+		
+		button.setEnabled(false);
+		button.setBounds(703, 399, 87, 30);
 		button.setFont(new Font("黑体", Font.PLAIN, 12));
 		 
 		button.addActionListener(
@@ -279,6 +289,7 @@ public class Frame extends JFrame {
 					filepath = (textField.getText() + ";") + filepath;
 					textField.setText(filepath);
 					}
+				openbutton.enable(true);
 			}
 		});
 		button_3.setFont(new Font("黑体", Font.PLAIN, 12));
@@ -308,7 +319,8 @@ public class Frame extends JFrame {
 		textArea.setBounds(52, 256, 190, 115);
 		panel.add(textArea);
 		
-		Button button_1 = new Button("\u63D0\u4EA4\u4EE3\u7801");
+		
+		button_1.setEnabled(false);
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String active = choice.getSelectedItem();
@@ -346,7 +358,8 @@ public class Frame extends JFrame {
 		label_2.setBounds(39, 211, 45, 23);
 		panel.add(label_2);
 		
-		Button button_2 = new Button("\u7F16\u8BD1\u6267\u884C");
+		
+		button_2.setEnabled(false);
 		
 		button_2.setFont(new Font("黑体", Font.PLAIN, 12));
 		button_2.setBounds(155, 386, 87, 30);
