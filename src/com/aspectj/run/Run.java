@@ -44,9 +44,9 @@ public class Run {
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					is));
 			String line = null;
-			MyPrintStream printStream = new MyPrintStream(System.out, text);
-			System.setOut(printStream);
-			System.setErr(printStream);
+			//MyPrintStream printStream = new MyPrintStream(System.out, text);
+			//System.setOut(printStream);
+			//System.setErr(printStream);
 			while ((line = in.readLine()) != null) {
 				System.out.println(line);
 			}

@@ -58,6 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import com.aspectj.analysis.AnalysisTool;
 import com.aspectj.coding.addcode;
+import com.aspectj.run.MyPrintStream;
 import com.aspectj.run.Run;
 import com.aspectj.tree.DrawTree;
 import com.aspectj.tree.xmlResultTreeNode;
@@ -81,7 +82,7 @@ public class Frame extends JFrame {
 	private Choice choice;
 	private String parentpath; //文件路径
 	private String javaname;
-
+	
 	Button button = new Button("\u751F\u6210\u6811\u72B6\u56FE");
 	Button button_1 = new Button("\u63D0\u4EA4\u4EE3\u7801");
 	Button button_2 = new Button("\u7F16\u8BD1\u6267\u884C");
@@ -93,7 +94,7 @@ public class Frame extends JFrame {
 
 	private static int functionlenth = 0;
 	ArrayList<xmlResultTreeNode> result = null;
-	TextArea textArea_1 = null;
+	public TextArea textArea_1 = null;
 	/**
 	 * Launch the application.
 	 */
@@ -172,6 +173,7 @@ public class Frame extends JFrame {
 		openbutton.setBounds(150, 33, 92, 30);
 		openbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				JFileChooser file = new JFileChooser("C:");
 //				file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				if(file.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
@@ -241,7 +243,10 @@ public class Frame extends JFrame {
 					{
 						e.printStackTrace();
 					}
+					
 				}
+				//MyPrintStream printStream = new MyPrintStream(System.out, textArea_1);
+				//System.setOut(printStream);
 				button.enable(true);
 				button_1.enable(true);
 				button_2.enable(true);
@@ -320,6 +325,7 @@ public class Frame extends JFrame {
 		panel.add(textArea);
 		
 		
+		
 		button_1.setEnabled(false);
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -377,6 +383,9 @@ public class Frame extends JFrame {
 		textArea_1 = new TextArea();
 		textArea_1.setBounds(342, 213, 448, 170);
 		panel.add(textArea_1);
+		
+		MyPrintStream printStream = new MyPrintStream(System.out, textArea_1);
+		System.setOut(printStream);
 		
 		Label label_4 = new Label("\u8F93\u51FA");
 		label_4.setFont(new Font("黑体", Font.PLAIN, 12));
