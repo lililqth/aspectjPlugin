@@ -7,6 +7,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileSystemView;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.JButton;
 
 import java.awt.Font;
@@ -19,9 +24,14 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.swing.JList;
 
+import java.awt.Component;
 import java.awt.List;
 import java.awt.ScrollPane;
 import java.awt.Label;
@@ -29,7 +39,9 @@ import java.awt.Button;
 import java.awt.Choice;
 import java.awt.Canvas;
 
+import javax.swing.Icon;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
@@ -58,6 +70,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import com.aspectj.analysis.AnalysisTool;
 import com.aspectj.coding.addcode;
+
 import com.aspectj.run.MyPrintStream;
 import com.aspectj.run.Run;
 import com.aspectj.tree.DrawTree;
@@ -68,16 +81,132 @@ import java.awt.TextArea;
 
 import javax.xml.parsers.*;
 
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
 import javax.swing.JComboBox;
 import java.awt.Scrollbar;
+import javax.swing.JTree;
 
 public class Frame extends JFrame {
+	protected static FileSystemView fsv = FileSystemView.getFileSystemView();
+	private static class FileTreeCellRenderer extends DefaultTreeCellRenderer {
+		private Map<String, Icon> iconCache = new HashMap<String, Icon>();
 
+		private Map<File, String> rootNameCache = new HashMap<File, String>();
+		
+		public Component getTreeCellRendererComponent(JTree tree, Object value,
+				boolean sel, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
+			FileTreeNode ftn = (FileTreeNode) value;
+			File file = ftn.file;
+			String filename = "";
+			if (file != null) {
+				if (ftn.isFileSystemRoot) {
+					filename = this.rootNameCache.get(file);
+					if (filename == null) {
+						filename = fsv.getSystemDisplayName(file);
+						this.rootNameCache.put(file, filename);
+					}
+					// long end = System.currentTimeMillis();
+					// System.out.println(filename + ":" + (end - start));
+				} else {
+					filename = file.getName();
+				}
+			}
+			JLabel result = (JLabel) super.getTreeCellRendererComponent(tree,
+					filename, sel, expanded, leaf, row, hasFocus);
+			if (file != null) {
+				Icon icon = this.iconCache.get(filename);
+				if (icon == null) {
+					// System.out.println("Getting icon of " + filename);
+					icon = fsv.getSystemIcon(file);
+					this.iconCache.put(filename, icon);
+				}
+				result.setIcon(icon);
+			}
+			return result;
+		}
+	}
+	private static class FileTreeNode implements TreeNode 
+	{
+		private File file;
+
+		private File[] children;
+
+		private TreeNode parent;
+
+		private boolean isFileSystemRoot;
+
+		public FileTreeNode(File file, boolean isFileSystemRoot, TreeNode parent) {
+			this.file = file;
+			this.isFileSystemRoot = isFileSystemRoot;
+			this.parent = parent;
+			this.children = this.file.listFiles();
+			if (this.children == null)
+				this.children = new File[0];
+		}
+
+		public FileTreeNode(File[] children) {
+			this.file = null;
+			this.parent = null;
+			this.children = children;
+		}
+
+		public Enumeration<?> children() {
+			final int elementCount = this.children.length;
+			return new Enumeration<File>() {
+				int count = 0;
+
+				public boolean hasMoreElements() {
+					return this.count < elementCount;
+				}
+
+				public File nextElement() {
+					if (this.count < elementCount) {
+						return FileTreeNode.this.children[this.count++];
+					}
+					throw new NoSuchElementException("Vector Enumeration");
+				}
+			};
+
+		}
+
+		public boolean getAllowsChildren() {
+			return true;
+		}
+
+		public TreeNode getChildAt(int childIndex) {
+			return new FileTreeNode(this.children[childIndex],
+					this.parent == null, this);
+		}
+
+		public int getChildCount() {
+			return this.children.length;
+		}
+
+		public int getIndex(TreeNode node) {
+			FileTreeNode ftn = (FileTreeNode) node;
+			for (int i = 0; i < this.children.length; i++) {
+				if (ftn.file.equals(this.children[i]))
+					return i;
+			}
+			return -1;
+		}
+
+		public TreeNode getParent() {
+			return this.parent;
+		}
+
+		public boolean isLeaf() {
+			return (this.getChildCount() == 0);
+		}
+	}
+		
 	private JPanel contentPane;
 	private Choice choice;
 	private String parentpath; //文件路径
@@ -91,13 +220,10 @@ public class Frame extends JFrame {
 	private static String list[] = new String[1000]; //保存函数的名字
 	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
 	
-
 	private static int functionlenth = 0;
 	ArrayList<xmlResultTreeNode> result = null;
 	public TextArea textArea_1 = null;
-	/**
-	 * Launch the application.
-	 */
+	JTree tree = null;
 	public static String[] getfunctionnamearray(){
 		return list;
 	} //返回函数的名字
@@ -137,12 +263,12 @@ public class Frame extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 10, 800, 439);
+		panel.setBounds(10, 10, 800, 439);
 		panel.setForeground(SystemColor.activeCaptionText);
 		contentPane.add(panel);
 		
 		choice = new Choice();
-		choice.setBounds(90, 165, 152, 21);
+		choice.setBounds(237, 164, 152, 21);
 		choice.setFont(new Font("黑体", Font.PLAIN, 12));
 		choice.add("before( Formals )");
 		choice.add("after( Formals ) returning [ ( Formal ) ]");
@@ -153,7 +279,7 @@ public class Frame extends JFrame {
 		panel.add(choice);
 		
 		final List list_1 = new List();
-		list_1.setBounds(342, 10, 448, 176);
+		list_1.setBounds(490, 10, 300, 176);
 		list_1.setFont(new Font("黑体", Font.PLAIN, 12));
 		list_1.setMultipleSelections(true);
 		list_1.setMultipleMode(true);
@@ -163,14 +289,14 @@ public class Frame extends JFrame {
 		panel.add(list_1);
 		
 		Label label = new Label("\u51FD\u6570\u5217\u8868");
-		label.setBounds(258, 10, 70, 23);
+		label.setBounds(406, 10, 70, 23);
 		label.setFont(new Font("黑体", Font.PLAIN, 12));
 		label.setAlignment(Label.CENTER);
 		panel.add(label);
 		
 		final Button openbutton = new Button("\u8F7D\u5165\u4E3B\u7C7B");
 		openbutton.setEnabled(false);
-		openbutton.setBounds(150, 33, 92, 30);
+		openbutton.setBounds(297, 34, 92, 30);
 		openbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -186,6 +312,11 @@ public class Frame extends JFrame {
 //					choice.add(filepath);
 					AnalysisTool.analysis(filepath);
 					
+					File currentFile = new File(filepath.substring(0, filepath.lastIndexOf('\\')));
+					File[] roots = currentFile.listFiles();
+					FileTreeNode rootTreeNode = new FileTreeNode(roots);
+					TreeModel treeModel = new DefaultTreeModel(rootTreeNode);
+					tree.setModel(treeModel);
 					/***************读取xml信息***************************************/
 					File analysisFile = new File(filepath);
 					parentpath = analysisFile.getParent();
@@ -276,7 +407,7 @@ public class Frame extends JFrame {
 			});
 		
 		final TextField textField = new TextField();
-		textField.setBounds(135, 86, 107, 23);
+		textField.setBounds(282, 87, 107, 23);
 		panel.add(textField); 
 		Button button_3 = new Button("\u6DFB\u52A0package\u8DEF\u5F84");
 		button_3.addActionListener(new ActionListener() {
@@ -298,30 +429,30 @@ public class Frame extends JFrame {
 			}
 		});
 		button_3.setFont(new Font("黑体", Font.PLAIN, 12));
-		button_3.setBounds(39, 33, 107, 30);
+		button_3.setBounds(186, 34, 107, 30);
 		panel.add(button_3);
 		panel.add(button);
 		
 		Label label_3 = new Label("Package\u8DEF\u5F84");
 		label_3.setFont(new Font("黑体", Font.PLAIN, 12));
 		label_3.setAlignment(Label.CENTER);
-		label_3.setBounds(39, 86, 92, 23);
+		label_3.setBounds(186, 87, 92, 23);
 		panel.add(label_3);
 		
 		
 		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setToolTipText("");
-		progressBar.setBounds(30, 10, 222, 122);
+		progressBar.setBounds(173, 10, 227, 122);
 		panel.add(progressBar);
 		
 		final Choice choice_1 = new Choice();
 		choice_1.setFont(new Font("黑体", Font.PLAIN, 12));
-		choice_1.setBounds(90, 213, 152, 21);
+		choice_1.setBounds(237, 212, 152, 21);
 		panel.add(choice_1);
 		
 		final TextArea textArea = new TextArea();
-		textArea.setBounds(52, 256, 190, 115);
+		textArea.setBounds(199, 255, 190, 115);
 		panel.add(textArea);
 		
 		
@@ -349,31 +480,31 @@ public class Frame extends JFrame {
 			}
 		});
 		button_1.setFont(new Font("黑体", Font.PLAIN, 12));
-		button_1.setBounds(52, 386, 87, 30);
+		button_1.setBounds(199, 385, 87, 30);
 		panel.add(button_1);
 		
 		Label label_1 = new Label("Active");
 		label_1.setFont(new Font("黑体", Font.PLAIN, 12));
 		label_1.setAlignment(Label.CENTER);
-		label_1.setBounds(39, 165, 45, 23);
+		label_1.setBounds(186, 164, 45, 23);
 		panel.add(label_1);
 		
 		Label label_2 = new Label("Way");
 		label_2.setFont(new Font("黑体", Font.PLAIN, 12));
 		label_2.setAlignment(Label.CENTER);
-		label_2.setBounds(39, 211, 45, 23);
+		label_2.setBounds(186, 210, 45, 23);
 		panel.add(label_2);
 		
 		
 		button_2.setEnabled(false);
 		
 		button_2.setFont(new Font("黑体", Font.PLAIN, 12));
-		button_2.setBounds(155, 386, 87, 30);
+		button_2.setBounds(302, 385, 87, 30);
 		panel.add(button_2);
 		
 		JProgressBar progressBar_1 = new JProgressBar();
 		progressBar_1.setToolTipText("");
-		progressBar_1.setBounds(30, 142, 227, 287);
+		progressBar_1.setBounds(173, 142, 227, 287);
 		panel.add(progressBar_1);
 		
 		JList list = new JList();
@@ -381,7 +512,7 @@ public class Frame extends JFrame {
 		panel.add(list);
 		
 		textArea_1 = new TextArea();
-		textArea_1.setBounds(342, 213, 448, 170);
+		textArea_1.setBounds(490, 213, 300, 170);
 		panel.add(textArea_1);
 		
 		MyPrintStream printStream = new MyPrintStream(System.out, textArea_1);
@@ -390,7 +521,7 @@ public class Frame extends JFrame {
 		Label label_4 = new Label("\u8F93\u51FA");
 		label_4.setFont(new Font("黑体", Font.PLAIN, 12));
 		label_4.setAlignment(Label.CENTER);
-		label_4.setBounds(266, 201, 70, 23);
+		label_4.setBounds(406, 211, 70, 23);
 		panel.add(label_4);
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -399,8 +530,22 @@ public class Frame extends JFrame {
 			}	
 		});
 		
+		
+		//File currentFile = new File();
+		//File[] roots = currentFile.listFiles();
+		File[] roots = File.listRoots();
+		FileTreeNode rootTreeNode = new FileTreeNode(roots);
+		tree = new JTree(rootTreeNode); 
+		tree.setCellRenderer(new FileTreeCellRenderer());
+		tree.setRootVisible(true);
+		
+		tree.setBounds(10, 10, 153, 419);
+		panel.add(tree);
+		
+		
 		choice_1.add("execution");
 		choice_1.add("call");
 		
 	}
 }
+
