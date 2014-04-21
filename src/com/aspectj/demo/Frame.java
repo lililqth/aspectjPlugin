@@ -102,6 +102,8 @@ public class Frame extends JFrame {
 
 		private Map<File, String> rootNameCache = new HashMap<File, String>();
 		
+		
+		JMenuItem showTreeItem = null;
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
 				boolean sel, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
@@ -254,7 +256,6 @@ public class Frame extends JFrame {
 	 * Create the frame.
 	 */
 	public Frame() {
-		
 		setTitle("Aspectj Plugin");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 849, 520);
@@ -488,9 +489,9 @@ public class Frame extends JFrame {
 		progressBar_1.setBounds(173, 142, 227, 287);
 		panel.add(progressBar_1);
 		
-		JList list = new JList();
-		list.setBounds(282, 73, 1, 1);
-		panel.add(list);
+		JList jlist = new JList();
+		jlist.setBounds(282, 73, 1, 1);
+		panel.add(jlist);
 		
 		textArea_1 = new TextArea();
 		textArea_1.setBounds(490, 213, 300, 170);
@@ -514,18 +515,27 @@ public class Frame extends JFrame {
 		
 		//File currentFile = new File();
 		//File[] roots = currentFile.listFiles();
+		JScrollPane treeScrollPane = new JScrollPane();
+		treeScrollPane.setBounds(10, 10, 153, 419);
 		File[] roots = File.listRoots();
 		FileTreeNode rootTreeNode = new FileTreeNode(roots);
 		tree = new JTree(rootTreeNode); 
 		tree.setCellRenderer(new FileTreeCellRenderer());
 		tree.setRootVisible(true);
-		
-		tree.setBounds(10, 10, 153, 419);
-		panel.add(tree);
+		//tree.setBounds(10, 10, 153, 419);
+		//treeScrollPane.add(tree);
+		treeScrollPane.setViewportView(tree);
+		panel.add(treeScrollPane);
 		
 		JMenu menu = new JMenu("操作");
-		JMenuItem showTreeItem = new JMenuItem("显示树状图");
+		JMenuItem menuPackageItem = new JMenuItem("添加package路径");
+		final JMenuItem menuMainItem = new JMenuItem("载入主类");
+		final JMenuItem showTreeItem = new JMenuItem("显示树状图");
+		menu.add(menuPackageItem);
+		menu.add(menuMainItem);
 		menu.add(showTreeItem);
+		menuMainItem.setEnabled(false);
+		showTreeItem.setEnabled(false);
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(menu);
 		this.setJMenuBar(menuBar);
@@ -542,6 +552,113 @@ public class Frame extends JFrame {
 					DrawTree.getInstance(result.get(0));
 				}
 			});
+		menuMainItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				JFileChooser file = new JFileChooser("C:");
+//				file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if(file.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+					File fl = file.getSelectedFile();
+					String filepath = fl.getAbsolutePath(); 
+					javaname = filepath; 
+					System.out.println(filepath); 
+//					list_1.add(filepath);
+//					choice.add(filepath);
+//					choice.add(filepath);
+					AnalysisTool.analysis(filepath);
+					
+					File currentFile = new File(filepath.substring(0, filepath.lastIndexOf('\\')));
+					File[] roots = currentFile.listFiles();
+					FileTreeNode rootTreeNode = new FileTreeNode(roots);
+					TreeModel treeModel = new DefaultTreeModel(rootTreeNode);
+					tree.setModel(treeModel);
+					/***************读取xml信息***************************************/
+					File analysisFile = new File(filepath);
+					parentpath = analysisFile.getParent();
+					String pathname = analysisFile.getParent()+"\\analysisResult.xml";
+					
+					try {
+						Thread.sleep(2500);
+					} catch (InterruptedException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					try {
+						FileWriter fw = new FileWriter(pathname, true);
+						fw.write("</functions>");
+						fw.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					
+					//System.out.println(pathname);
+					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+					try
+					{
+						DocumentBuilder db = dbf.newDocumentBuilder();
+						Document doc = db.parse(pathname);
+
+						NodeList startList = doc.getElementsByTagName("start");
+						System.out.println("共有" + startList.getLength() + "个start节点");
+						
+						int j =0 , k = 0;
+						for (int i = 0; i < startList.getLength(); i++)
+						{
+							Node start = startList.item(i);
+							String name = start.getTextContent(); 
+							System.out.println(name);
+							for(j = 0; j < k; j++){
+								if(name.equals(list[j])==true){
+									functiontime[j]++;
+									break;
+								}
+							}
+							if(j == k){
+								functiontime[k] = 1;
+								list[k++] = name;
+							}
+						}//去重（去除文件名中重复的部分）
+						for(int i = 0; i < k; i++){
+							list_1.add(list[i]);
+						}
+						functionlenth = k;
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+					
+				}
+				//MyPrintStream printStream = new MyPrintStream(System.out, textArea_1);
+				//System.setOut(printStream);
+				//button.enable(true);
+				button_1.enable(true);
+				button_2.enable(true);
+				showTreeItem.setEnabled(true);
+			}
+		
+		});
+		menuPackageItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser file = new JFileChooser("C:");
+				file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if(file.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+					File fl = file.getSelectedFile();
+					String filepath = fl.getAbsolutePath(); 
+					if(packagename == null)
+						packagename = filepath + "\\*.java ";
+					else
+						packagename += " "+ filepath + "\\*.java";
+					System.out.println(packagename); 
+					filepath = (textField.getText() + ";") + filepath;
+					textField.setText(filepath);
+					}
+				openbutton.enable(true);
+				menuMainItem.setEnabled(true);
+			}
+		});
 		choice_1.add("execution");
 		choice_1.add("call");
 		
