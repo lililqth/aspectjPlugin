@@ -42,6 +42,9 @@ import java.awt.Canvas;
 import javax.swing.Icon;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
@@ -211,8 +214,6 @@ public class Frame extends JFrame {
 	private Choice choice;
 	private String parentpath; //文件路径
 	private String javaname;
-	
-	Button button = new Button("\u751F\u6210\u6811\u72B6\u56FE");
 	Button button_1 = new Button("\u63D0\u4EA4\u4EE3\u7801");
 	Button button_2 = new Button("\u7F16\u8BD1\u6267\u884C");
 	
@@ -256,7 +257,7 @@ public class Frame extends JFrame {
 		
 		setTitle("Aspectj Plugin");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 849, 488);
+		setBounds(100, 100, 849, 520);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -378,7 +379,7 @@ public class Frame extends JFrame {
 				}
 				//MyPrintStream printStream = new MyPrintStream(System.out, textArea_1);
 				//System.setOut(printStream);
-				button.enable(true);
+				//button.enable(true);
 				button_1.enable(true);
 				button_2.enable(true);
 			}
@@ -386,25 +387,6 @@ public class Frame extends JFrame {
 		});
 		openbutton.setFont(new Font("黑体", Font.PLAIN, 12));
 		panel.add(openbutton);
-		
-		
-		button.setEnabled(false);
-		button.setBounds(703, 399, 87, 30);
-		button.setFont(new Font("黑体", Font.PLAIN, 12));
-		 
-		button.addActionListener(
-				new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) 
-				{
-					try {
-						result = AnalysisTool.analysisXMLFile(parentpath+"\\analysisResult.xml");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					DrawTree.getInstance(result.get(0));
-				}
-			});
 		
 		final TextField textField = new TextField();
 		textField.setBounds(282, 87, 107, 23);
@@ -431,7 +413,6 @@ public class Frame extends JFrame {
 		button_3.setFont(new Font("黑体", Font.PLAIN, 12));
 		button_3.setBounds(186, 34, 107, 30);
 		panel.add(button_3);
-		panel.add(button);
 		
 		Label label_3 = new Label("Package\u8DEF\u5F84");
 		label_3.setFont(new Font("黑体", Font.PLAIN, 12));
@@ -542,7 +523,25 @@ public class Frame extends JFrame {
 		tree.setBounds(10, 10, 153, 419);
 		panel.add(tree);
 		
-		
+		JMenu menu = new JMenu("操作");
+		JMenuItem showTreeItem = new JMenuItem("显示树状图");
+		menu.add(showTreeItem);
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.add(menu);
+		this.setJMenuBar(menuBar);
+		showTreeItem.addActionListener(
+				new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) 
+				{
+					try {
+						result = AnalysisTool.analysisXMLFile(parentpath+"\\analysisResult.xml");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					DrawTree.getInstance(result.get(0));
+				}
+			});
 		choice_1.add("execution");
 		choice_1.add("call");
 		
