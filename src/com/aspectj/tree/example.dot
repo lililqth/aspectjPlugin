@@ -1,6 +1,6 @@
 digraph G{
 	bgcolor = "#f0f0f0";
-	main->function;
+	main->function[label = "1 time"];
 	main->C;
 	C->B;
 	B->A;
