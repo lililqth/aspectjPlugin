@@ -416,7 +416,10 @@ public class Frame extends JFrame {
                 if(node.isLeaf()){
                 	File file = node.file;
                 	String fileName = file.getAbsolutePath();
-                	System.out.println(fileName);
+                	System.out.println(fileName);      
+                	/****此处添加单击文件，可编辑文件。****/
+                	Editor edit = new Editor();
+                	edit.edite(file);
                 }
             }
         }); 
