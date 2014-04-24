@@ -73,28 +73,20 @@ public class DrawTree {
 		// ÃÌº”Õº∆¨œ‘ æ«¯”Ú
 		compositeImage = new Composite(shell, SWT.BORDER);
 		GridData compositeImageData = new GridData(GridData.FILL_VERTICAL);
-		compositeImageData.widthHint = 1000;
 		final Image img = new Image(this.display,
 				"src/com/aspectj/tree/example.png");
+		final Rectangle bounds = img.getBounds();
+		final int picwidth = bounds.width;// Õº∆¨øÌ
+		final int picheight = bounds.height;// Õº∆¨∏ﬂ
+		compositeImageData.widthHint = picwidth+20;
 		Canvas canvas = new Canvas(compositeImage, SWT.NONE);
 		GridData canvasData = new GridData(GridData.FILL_BOTH);
-		canvasData.widthHint = 1000;
+		canvasData.widthHint = picwidth+20;
 		canvasData.heightHint = 600;
-		final Rectangle bounds = img.getBounds();
-		int picwidth = bounds.width;// Õº∆¨øÌ
-		int picheight = bounds.height;// Õº∆¨∏ﬂ
-		double r1 = 500.0 / (double) picheight;
-		double r2 = 1000.0 / (double) picwidth;
-		double ratio = Math.min(r1, r2);
-		final int picWidthFinal = (int) (ratio * picwidth);
-		final int picHeightFinal = (int) (ratio * picheight);
-		final Image scaled = new Image(display, img.getImageData().scaledTo(
-				picWidthFinal, picHeightFinal));
 		canvas.setLayoutData(canvasData);
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				e.gc.drawImage(scaled, (1000 - picWidthFinal) / 2,
-						(550 - picHeightFinal) / 2);
+				e.gc.drawImage(img, 10 , (550 - picheight)/2);
 			}
 		});
 		compositeImage.setLayout(new GridLayout());

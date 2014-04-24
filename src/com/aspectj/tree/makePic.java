@@ -2,6 +2,8 @@ package com.aspectj.tree;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.eclipse.swt.internal.win32.SIZE;
 import org.eclipse.swt.widgets.TreeItem;
 
 
@@ -62,17 +64,17 @@ public class makePic
    {
       gv = new GraphViz();
       gv.addln(gv.start_graph());
+      gv.addln("bgcolor = \"#F0F0F0\";");
       traverse(drawTree.root);
       gv.addln(gv.end_graph());
       System.out.println(gv.getDotSource());
       //String type = "gif";
-//      String type = "dot";
+ //     String type = "dot";
 //      String type = "fig";    // open with xfig
 //      String type = "pdf";
 //      String type = "ps";
-//      String type = "svg";    // open with inkscape
+     // String type = "svg";    // open with inkscape
       String type = "png";
-//      String type = "plain";
       //File out = new File("/tmp/out." + type);   // Linux
       File out = new File("src/com/aspectj/tree/example." + type);    // Windows
       gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );

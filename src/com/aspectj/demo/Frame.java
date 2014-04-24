@@ -33,6 +33,7 @@ import javax.swing.JList;
 
 import java.awt.Component;
 import java.awt.List;
+import java.awt.Panel;
 import java.awt.ScrollPane;
 import java.awt.Label;
 import java.awt.Button;
@@ -87,7 +88,9 @@ import javax.xml.parsers.*;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
@@ -264,7 +267,7 @@ public class Frame extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JPanel panel = new JPanel();
+		Panel panel = new Panel();
 		panel.setBounds(10, 10, 800, 439);
 		panel.setForeground(SystemColor.activeCaptionText);
 		contentPane.add(panel);
@@ -296,124 +299,9 @@ public class Frame extends JFrame {
 		label.setAlignment(Label.CENTER);
 		panel.add(label);
 		
-		final Button openbutton = new Button("\u8F7D\u5165\u4E3B\u7C7B");
-		openbutton.setEnabled(false);
-		openbutton.setBounds(297, 34, 92, 30);
-		openbutton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				JFileChooser file = new JFileChooser("C:");
-//				file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				if(file.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
-					File fl = file.getSelectedFile();
-					String filepath = fl.getAbsolutePath(); 
-					javaname = filepath; 
-					System.out.println(filepath); 
-//					list_1.add(filepath);
-//					choice.add(filepath);
-//					choice.add(filepath);
-					AnalysisTool.analysis(filepath);
-					
-					File currentFile = new File(filepath.substring(0, filepath.lastIndexOf('\\')));
-					File[] roots = currentFile.listFiles();
-					FileTreeNode rootTreeNode = new FileTreeNode(roots);
-					TreeModel treeModel = new DefaultTreeModel(rootTreeNode);
-					tree.setModel(treeModel);
-					/***************读取xml信息***************************************/
-					File analysisFile = new File(filepath);
-					parentpath = analysisFile.getParent();
-					String pathname = analysisFile.getParent()+"\\analysisResult.xml";
-					
-					try {
-						Thread.sleep(2500);
-					} catch (InterruptedException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
-					try {
-						FileWriter fw = new FileWriter(pathname, true);
-						fw.write("</functions>");
-						fw.close();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-					
-					//System.out.println(pathname);
-					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-					try
-					{
-						DocumentBuilder db = dbf.newDocumentBuilder();
-						Document doc = db.parse(pathname);
-
-						NodeList startList = doc.getElementsByTagName("start");
-						System.out.println("共有" + startList.getLength() + "个start节点");
-						
-						int j =0 , k = 0;
-						for (int i = 0; i < startList.getLength(); i++)
-						{
-							Node start = startList.item(i);
-							String name = start.getTextContent(); 
-							System.out.println(name);
-							for(j = 0; j < k; j++){
-								if(name.equals(list[j])==true){
-									functiontime[j]++;
-									break;
-								}
-							}
-							if(j == k){
-								functiontime[k] = 1;
-								list[k++] = name;
-							}
-						}//去重（去除文件名中重复的部分）
-						for(int i = 0; i < k; i++){
-							list_1.add(list[i]);
-						}
-						functionlenth = k;
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-					
-				}
-				//MyPrintStream printStream = new MyPrintStream(System.out, textArea_1);
-				//System.setOut(printStream);
-				//button.enable(true);
-				button_1.enable(true);
-				button_2.enable(true);
-			}
-		
-		});
-		openbutton.setFont(new Font("黑体", Font.PLAIN, 12));
-		panel.add(openbutton);
-		
 		final TextField textField = new TextField();
 		textField.setBounds(282, 87, 107, 23);
-		panel.add(textField); 
-		Button button_3 = new Button("\u6DFB\u52A0package\u8DEF\u5F84");
-		button_3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser file = new JFileChooser("C:");
-				file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				if(file.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
-					File fl = file.getSelectedFile();
-					String filepath = fl.getAbsolutePath(); 
-					if(packagename == null)
-						packagename = filepath + "\\*.java ";
-					else
-						packagename += " "+ filepath + "\\*.java";
-					System.out.println(packagename); 
-					filepath = (textField.getText() + ";") + filepath;
-					textField.setText(filepath);
-					}
-				openbutton.enable(true);
-			}
-		});
-		button_3.setFont(new Font("黑体", Font.PLAIN, 12));
-		button_3.setBounds(186, 34, 107, 30);
-		panel.add(button_3);
+		panel.add(textField);
 		
 		Label label_3 = new Label("Package\u8DEF\u5F84");
 		label_3.setFont(new Font("黑体", Font.PLAIN, 12));
@@ -522,8 +410,16 @@ public class Frame extends JFrame {
 		tree = new JTree(rootTreeNode); 
 		tree.setCellRenderer(new FileTreeCellRenderer());
 		tree.setRootVisible(true);
-		//tree.setBounds(10, 10, 153, 419);
-		//treeScrollPane.add(tree);
+		tree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                FileTreeNode node=(FileTreeNode)evt.getPath().getLastPathComponent();
+                if(node.isLeaf()){
+                	File file = node.file;
+                	String fileName = file.getAbsolutePath();
+                	System.out.println(fileName);
+                }
+            }
+        }); 
 		treeScrollPane.setViewportView(tree);
 		panel.add(treeScrollPane);
 		
@@ -638,7 +534,6 @@ public class Frame extends JFrame {
 				button_2.enable(true);
 				showTreeItem.setEnabled(true);
 			}
-		
 		});
 		menuPackageItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -655,7 +550,6 @@ public class Frame extends JFrame {
 					filepath = (textField.getText() + ";") + filepath;
 					textField.setText(filepath);
 					}
-				openbutton.enable(true);
 				menuMainItem.setEnabled(true);
 			}
 		});

@@ -1,0 +1,8 @@
+digraph G{
+	bgcolor = "#f0f0f0";
+	main->function;
+	main->C;
+	C->B;
+	B->A;
+	main->dog;
+}

@@ -104,7 +104,7 @@ public class MyActionGroup extends ActionGroup {
 		public void run() {
 			if(drawTre.compositeImage == null) {
 				drawTre.createCompositeImage();
-				drawTre.shell.setSize(drawTre.shell.getSize().x+400, drawTre.shell.getSize().y);
+				//drawTre.shell.setSize(drawTre.shell.getSize().x+400, drawTre.shell.getSize().y);
 				drawTre.shell.layout(true);
 			}
 		}
@@ -117,7 +117,7 @@ public class MyActionGroup extends ActionGroup {
 			if(drawTre.compositeImage != null) {
 				drawTre.compositeImage.dispose();
 				drawTre.compositeImage = null;
-				drawTre.shell.setSize(drawTre.shell.getSize().x-400, drawTre.shell.getSize().y);
+				//drawTre.shell.setSize(drawTre.shell.getSize().x-400, drawTre.shell.getSize().y);
 				drawTre.shell.layout(true);
 			}
 		}
