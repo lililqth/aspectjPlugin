@@ -12,12 +12,15 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.JButton;
 
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -99,6 +102,8 @@ import java.awt.Scrollbar;
 import javax.swing.JTree;
 
 public class Frame extends JFrame {
+	Editor edit = null;
+	int flagClick ;
 	protected static FileSystemView fsv = FileSystemView.getFileSystemView();
 	private static class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 		private Map<String, Icon> iconCache = new HashMap<String, Icon>();
@@ -259,6 +264,7 @@ public class Frame extends JFrame {
 	 * Create the frame.
 	 */
 	public Frame() {
+		flagClick = 0;
 		setTitle("Aspectj Plugin");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 849, 520);
@@ -410,19 +416,36 @@ public class Frame extends JFrame {
 		tree = new JTree(rootTreeNode); 
 		tree.setCellRenderer(new FileTreeCellRenderer());
 		tree.setRootVisible(true);
-		tree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
-            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-                FileTreeNode node=(FileTreeNode)evt.getPath().getLastPathComponent();
-                if(node.isLeaf()){
-                	File file = node.file;
-                	String fileName = file.getAbsolutePath();
-                	System.out.println(fileName);      
-                	/****此处添加单击文件，可编辑文件。****/
-                	Editor edit = new Editor();
-                	edit.edite(file);
-                }
-            }
-        }); 
+		
+		tree.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent e) {
+				if(flagClick==0)
+				{
+					flagClick = 1;
+					return;
+				}
+				flagClick = 0;
+				TreePath path = tree.getPathForLocation(e.getX(),e.getY());
+				try {
+					FileTreeNode node = (FileTreeNode)path.getLastPathComponent();
+					if (node.isLeaf()) {
+						File file = node.file;
+						String fileName = file.getAbsolutePath();
+						System.out.println(fileName);
+						/**** 此处添加单击文件，可编辑文件。 ****/
+						edit = new Editor();
+						edit.edite(file);
+					}
+				} catch (java.lang.NullPointerException	e2) {
+					// TODO: handle exception
+					System.out.println("null");
+				}
+
+				
+			}
+		});
+		
 		treeScrollPane.setViewportView(tree);
 		panel.add(treeScrollPane);
 		
@@ -560,5 +583,6 @@ public class Frame extends JFrame {
 		choice_1.add("call");
 		
 	}
+	
 }
 

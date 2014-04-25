@@ -27,10 +27,10 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
 public class Editor {
-	private static final Shell shell = new Shell();
-	private static TabFolder tabFolder;
-	private static Font font=Display.getDefault().getSystemFont();
-	private static Color fontColor=Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+	private static Shell shell = null ;
+	private static TabFolder tabFolder = null;
+	private static Font font = null;
+	private static Color fontColor= null;
 	/**
 	 * @param f
 	 *            文件
@@ -63,7 +63,7 @@ public class Editor {
 	 * @param f 要打开的文件
 	 * @param text 要添加到选项卡的内容
 	 */
-	private static void addTab(File f, String text) {
+	static void addTab(File f, String text) {
 		TabItem tab = new TabItem(tabFolder, SWT.NONE);
 		if(f!=null)tab.setText(f.getName());else tab.setText("new tab");
 		Text texts = new Text(tabFolder, SWT.MULTI | SWT.V_SCROLL
@@ -135,7 +135,9 @@ public class Editor {
 	}
 	public static void edite(final File editfFile) {
 		final Display display = Display.getDefault();
-		
+		font=Display.getDefault().getSystemFont();
+		fontColor=Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+		shell = new Shell();
 		shell.setSize(653, 414);
 		shell.setText("简易文本编辑器");
 		shell.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -247,6 +249,7 @@ public class Editor {
 				display.sleep();
 			}
 		}
+		display.dispose();
 	}
 }
 
