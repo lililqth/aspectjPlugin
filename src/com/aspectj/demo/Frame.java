@@ -61,6 +61,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JDesktopPane;
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 
 import java.awt.TextField;
 
@@ -251,6 +252,7 @@ public class Frame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					Frame frame = new Frame();
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -306,13 +308,13 @@ public class Frame extends JFrame {
 		panel.add(label);
 		
 		final TextField textField = new TextField();
-		textField.setBounds(282, 87, 107, 23);
+		textField.setBounds(282, 64, 107, 23);
 		panel.add(textField);
 		
 		Label label_3 = new Label("Package\u8DEF\u5F84");
 		label_3.setFont(new Font("黑体", Font.PLAIN, 12));
 		label_3.setAlignment(Label.CENTER);
-		label_3.setBounds(186, 87, 92, 23);
+		label_3.setBounds(186, 64, 92, 23);
 		panel.add(label_3);
 		
 		
@@ -391,8 +393,8 @@ public class Frame extends JFrame {
 		textArea_1.setBounds(490, 213, 300, 170);
 		panel.add(textArea_1);
 		
-		MyPrintStream printStream = new MyPrintStream(System.out, textArea_1);
-		System.setOut(printStream);
+//		MyPrintStream printStream = new MyPrintStream(System.out, textArea_1);
+//		System.setOut(printStream);
 		
 		Label label_4 = new Label("\u8F93\u51FA");
 		label_4.setFont(new Font("黑体", Font.PLAIN, 12));
@@ -435,7 +437,7 @@ public class Frame extends JFrame {
 						System.out.println(fileName);
 						/**** 此处添加单击文件，可编辑文件。 ****/
 						edit = new Editor();
-						edit.edite(file);
+						//edit.edite(file);
 					}
 				} catch (java.lang.NullPointerException	e2) {
 					// TODO: handle exception

@@ -9,6 +9,7 @@ import javax.xml.crypto.Data;
 
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 
 import sun.org.mozilla.javascript.internal.JavaAdapter;
 
@@ -16,8 +17,8 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
 
 
 public class MyPrintStream extends PrintStream {
-	private TextArea text;
-	public MyPrintStream(OutputStream out, TextArea text) {
+	private Text text;
+	public MyPrintStream(OutputStream out, Text text) {
 		super(out);
 		this.text = text;
 	}
