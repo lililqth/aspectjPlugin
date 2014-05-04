@@ -387,8 +387,8 @@ public class Editor {
 	}
 
 	public static void createFileTree() {
-		iconFolder = new Image(shell.getDisplay(), "D:/Desktop/folder.gif");
-		iconFile = new Image(shell.getDisplay(), "D:/Desktop/file.gif");
+		iconFolder = new Image(shell.getDisplay(), "src/com/aspectj/demo/folder.gif");
+		iconFile = new Image(shell.getDisplay(), "src/com/aspectj/demo/file.gif");
 		fileTabFolder = new TabFolder(shell, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.CANCEL | SWT.MULTI);
 		TabItem functionTabItem = new TabItem(fileTabFolder, SWT.NONE);
