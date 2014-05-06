@@ -7,83 +7,97 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Stack;
 
-public class ValueTracker {
+public class ValueTracker{
+
+	private static HashMap<String, ArrayList<ValueChangePoint>> valueMap;
 	
-		/** getCode
-		 *  get the aj code to track value's change
-		 * @param ValueName value's name
-		 * @return aj code
-		 * @throws IOException 
-		 */
-		public static String getCode(String valueName) throws IOException 
-		{
-			BufferedReader fReader = new BufferedReader(
-					new FileReader(
-							new File("static\\VTprint.aj")));
-			String resultFormat = "";
-			String tmpString;
-			tmpString = fReader.readLine();
+	public static void analysis(String filepath) {
+		valueMap = _analysis(filepath);
+	}
+	
+	/** analysis
+	 *  analysis the xml file to get all ValueChangePoint
+	 * @param filepath the xml file's path
+	 * @return Dictionary<ValueName, ArrayList<ValueChangepoint>>
+	 * @throws IOException 
+	 */
+	private static HashMap<String, ArrayList<ValueChangePoint>> _analysis(String filepath) throws IOException {
+
 			
+			HashMap<String, ArrayList<ValueChangePoint>> result = new HashMap<>();
+			Stack<String> functionStack = new Stack<String>();
+			
+			BufferedReader br = new BufferedReader( new FileReader(	new File(filepath) ) );
+			
+			String tmpString = br.readLine();
+			
+			// 针对每一行变化进行判断
 			while (tmpString != null) {
-				resultFormat = resultFormat + tmpString + "\n";
-				tmpString = fReader.readLine();
-			}
-			
-			return String.format(resultFormat, valueName);
-		}
-		/** getCode
-		 *  get the aj code to track value's change
-		 * @param ValueName value's name
-		 * @param filepath xml file's path
-		 * @return aj code
-		 * @throws IOException 
-		 */
-		public static String getCode(String valueName, String filepath) throws IOException
-		{
-			BufferedReader fReader = new BufferedReader(
-					new FileReader(
-							new File("static\\VTfile.aj")));
-			String resultFormat = "";
-			String tmpString;
-			tmpString = fReader.readLine();
-			
-			while (tmpString != null) {
-				resultFormat = resultFormat + tmpString + "\n";
-				tmpString = fReader.readLine();
-			}
-			
-			return String.format(resultFormat, valueName, filepath);
-		}
-		/** analysis
-		 *  analysis the xml file to get all ValueChangePoint
-		 * @param filepath the xml file's path
-		 * @return Dictionary<ValueName, ArrayList<ValueChangepoint>>
-		 * @throws IOException 
-		 */
-		public static Map<String, ArrayList<ValueChangePoint>> analysis(String filepath) throws IOException {
-			Map<String, ArrayList<ValueChangePoint>> result = new HashMap<>();
-			BufferedReader fReader = new BufferedReader(
-														new FileReader(
-																new File(filepath)));
-			String tmpString;
-			tmpString = fReader.readLine();
-			while (tmpString != null) {
-				String[] tmpParse = tmpString.split(",");
 				
-				if (tmpParse.length == 5 && tmpParse[4].equals("set")) {
-					ValueChangePoint tmpVCP = new ValueChangePoint(tmpParse[1], tmpParse[2], tmpParse[3]);
-					
-					// add a new key-value map
-					if (!result.containsKey(tmpParse[0])) 
-						result.put(tmpParse[0], new ArrayList<ValueChangePoint>());
-					
-					result.get(tmpParse[0]).add(tmpVCP);
+				// 函数栈模拟
+				if (tmpString.startsWith("<functionstart>")) {
+					functionStack.push(tmpString.replace("<functionstart>", "").replace("</functionstart>", ""));					
+				}
+				else if (tmpString.startsWith("<functionend>")) {
+					functionStack.pop();
 				}
 				
-				tmpString = fReader.readLine();
+				// 将变量加入 result 集 
+				else if (tmpString.startsWith("value")) {
+					tmpString = tmpString.replace("<value>", "").replace("</value>", "");
+					String valueName = tmpString.split("||")[0];
+					String value = tmpString.split("||")[1];
+					
+					if (result.containsKey(valueName)) {
+						ArrayList<ValueChangePoint> tmpArrayList = result.get(valueName);
+						string OldValue = tmpArrayList.get(tmpArrayList.size() - 1).value;
+						tmpArrayList.add(new ValueChangePoint(functionStack.peek(), OldValue, value));
+					} else {
+						ArrayList<ValueChangePoint> tmpArrayList = new ArrayList<ValueChangePoint>();
+						tmpArrayList.add(new ValueChangePoint(valueName, null, value));
+						result.put(functionStack.peek(), tmpArrayList);
+					}
+				}
+				
+				tmpString = br.readLine();
 			}
+			
+			br.close();
+			
 			return result;
 		}
+
+	public static ArrayList<ValueChangePoint> getValueList(String valueName)
+	{
+		// 如果没有分析过则报错
+		if (valueMap == null) {
+			throw new NullPointerException();
+		}
+		// 寻找变量并返回其 ArrayList
+		else {
+			Iterator<Entry<String, ArrayList<ValueChangePoint>>> it = valueMap.entrySet().iterator();
+			while (it.hasNext()) {
+				String keyName = it.next().getKey();
+				
+				// 判断是否为 类.属性 的格式
+				String startSymbol;
+				if (valueName.contains(".")) {
+					startSymbol = "";
+				} else {
+					startSymbol = ".";
+				}
+				
+				if (keyName.endsWith(startSymbol + valueName)) {
+					return valueMap.get(keyName);
+				}
+			}
+			// 不存在该变量则报错
+			throw new NullPointerException();
+		}
+	}
 }

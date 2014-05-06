@@ -2,10 +2,9 @@ package com.aspectj.analysis;
 
 public class ValueChangePoint {
 		public String methodName;
-		public String oldValue;
-		public String newValue;
+		public String value;
 		
-		public ValueChangePoint(String methodName, String oldValue, String newValue)
+		public ValueChangePoint(String methodName, String value, String newValue)
 		{
 			this.methodName = methodName;
 			this.oldValue = oldValue;
