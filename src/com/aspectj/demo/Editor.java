@@ -310,7 +310,7 @@ public class Editor {
 		tabFormData.right = new FormAttachment(100, 5);
 		tabFormData.bottom = new FormAttachment(75, -5);
 		tabFolder.setLayoutData(tabFormData);
-	}
+		}
 
 	private static File renameFile(File file, String newName) {
 		File dest = new File(file.getParentFile(), newName);
@@ -391,6 +391,7 @@ public class Editor {
 		iconFile = new Image(shell.getDisplay(), "src/com/aspectj/demo/file.gif");
 		fileTabFolder = new TabFolder(shell, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.CANCEL | SWT.MULTI);
+		//在这个tab中显示函数列表
 		TabItem functionTabItem = new TabItem(fileTabFolder, SWT.NONE);
 		functionTabItem.setText("函数");
 		TabItem tab = new TabItem(fileTabFolder, SWT.NONE);
