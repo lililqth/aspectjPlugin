@@ -29,7 +29,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.ColorDialog;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
@@ -46,7 +48,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-
+import org.eclipse.swt.widgets.Label;
 import com.aspectj.run.MyPrintStream;
 
 public class Editor {
@@ -490,7 +492,87 @@ public class Editor {
 			}
 		});
 	}
-
+	
+	public static void createFunctionTab()
+	{
+		TabItem tab = new TabItem(tabFolder, SWT.NONE);
+		
+		tab.setText("添加代码");
+		Composite functionComposite = new Composite(tabFolder, SWT.NONE);
+		functionComposite.setLayout(new FormLayout());
+		//  提交代码按钮
+		Button submitButton = new Button(functionComposite, SWT.NONE);
+		submitButton.setText("提交代码");
+		final FormData submitButtonFormData = new FormData();
+		submitButtonFormData.top = new FormAttachment(80, -15);
+		submitButtonFormData.left = new FormAttachment(10, -40);
+		submitButtonFormData.right = new FormAttachment(10, +40);
+		submitButtonFormData.bottom = new FormAttachment(80, +15);
+		submitButton.setLayoutData(submitButtonFormData);
+		Button compilingtButton = new Button(functionComposite, SWT.NONE);
+		compilingtButton.setText("编译执行");
+		final FormData compilButtonFormData = new FormData();
+		compilButtonFormData.top = new FormAttachment(80, -15);
+		compilButtonFormData.left = new FormAttachment(10, +160);
+		compilButtonFormData.right = new FormAttachment(10, +240);
+		compilButtonFormData.bottom = new FormAttachment(80, +15);
+		compilingtButton.setLayoutData(compilButtonFormData);
+		
+		Text insertText  = new Text(functionComposite, SWT.BORDER);
+		final FormData textFormData = new FormData();
+		textFormData.top = new FormAttachment(30, 0);
+		textFormData.left = new FormAttachment(10, -40);
+		textFormData.right = new FormAttachment(10, +240);
+		textFormData.bottom = new FormAttachment(70, 0);
+		insertText.setLayoutData(textFormData);
+		
+		Combo activeCombo = new Combo(functionComposite, SWT.DROP_DOWN|SWT.READ_ONLY);
+		activeCombo.add("before( Formals )");
+		activeCombo.add("after( Formals ) returning [ ( Formal ) ]");
+		activeCombo.add("after( Formals ) throwing [ ( Formal ) ]");
+		activeCombo.add("after( Formals )");
+		activeCombo.add("Type around( Formals )");
+		activeCombo.setText("before( Formals )");
+		final FormData activeComboFormData = new FormData();
+		activeComboFormData.top = new FormAttachment(10, -15);
+		activeComboFormData.left = new FormAttachment(10, +20);
+		activeComboFormData.right = new FormAttachment(10, +240);
+		activeComboFormData.bottom = new FormAttachment(10, +15);
+		activeCombo.setLayoutData(activeComboFormData);
+		
+		Combo wayCombo = new Combo(functionComposite, SWT.DROP_DOWN|SWT.READ_ONLY);
+		wayCombo.add("execution");
+		wayCombo.add("call");
+		wayCombo.setText("execution");
+		final FormData wayComboFormData = new FormData();
+		wayComboFormData.top = new FormAttachment(22, -15);
+		wayComboFormData.left = new FormAttachment(10, +20);
+		wayComboFormData.right = new FormAttachment(10, +240);
+		wayComboFormData.bottom = new FormAttachment(22, +15);
+		wayCombo.setLayoutData(wayComboFormData);
+		
+		
+		Label activeLabel = new Label(functionComposite, SWT.NONE);
+		activeLabel.setText("Active");
+		final FormData activeLabelFormData = new FormData();
+		activeLabelFormData.top = new FormAttachment(10, -15);
+		activeLabelFormData.left = new FormAttachment(10, -40);
+		activeLabelFormData.right = new FormAttachment(10, +10);
+		activeLabelFormData.bottom = new FormAttachment(10, +15);
+		activeLabel.setLayoutData(activeLabelFormData);
+		
+		Label wayLabel = new Label(functionComposite, SWT.NONE);
+		wayLabel.setText("Way");
+		final FormData wayLabelFormData = new FormData();
+		wayLabelFormData.top = new FormAttachment(22, -15);
+		wayLabelFormData.left = new FormAttachment(10, -40);
+		wayLabelFormData.right = new FormAttachment(10, +10);
+		wayLabelFormData.bottom = new FormAttachment(22, +15);
+		wayLabel.setLayoutData(wayLabelFormData);
+		tab.setControl(functionComposite);
+		tabFolder.setSelection(tab);
+		
+	}
 	public static void main(String[] args) {
 		display = Display.getDefault();
 		font = Display.getDefault().getSystemFont();
@@ -517,9 +599,10 @@ public class Editor {
 		createConsole();
 		// 菜单
 		createMenu();
-		
-		addTab(null,
-				"欢迎使用简易文本编辑器;本编辑器可以对小于1M的txt或html文件进行编辑\n\n该程序旨在演示打开文件对话框、menu、目录对话框、颜色对话框、字体对话框的使用方法\n\nFile菜单下有新建、打开、打开多个文件的功能，以及保存及另存为功能。\nclean为清除当前选项卡的内容，close为关闭当前选项卡，Font为选择字体（忽略颜色），FontColor为选择字体颜色（只对当前选项卡内容及之后打开的有效）");
+		// 添加代码选项卡
+		createFunctionTab();
+//		addTab(null,
+//				"欢迎使用简易文本编辑器;本编辑器可以对小于1M的txt或html文件进行编辑\n\n该程序旨在演示打开文件对话框、menu、目录对话框、颜色对话框、字体对话框的使用方法\n\nFile菜单下有新建、打开、打开多个文件的功能，以及保存及另存为功能。\nclean为清除当前选项卡的内容，close为关闭当前选项卡，Font为选择字体（忽略颜色），FontColor为选择字体颜色（只对当前选项卡内容及之后打开的有效）");
 		shell.open();
 		shell.layout();
 		
