@@ -404,7 +404,7 @@ public class Frame extends JFrame {
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//Run.runAnalysis("F:\\java\\helloworld", "helloworld.java", "add.aj");
-				Run.runAnalysis(parentpath, javaname, ".aj", textArea_1);
+				Run.runAnalysis(parentpath, javaname, ".aj");
 			}	
 		});
 		

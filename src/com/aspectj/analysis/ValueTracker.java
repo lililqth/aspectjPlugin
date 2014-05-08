@@ -16,7 +16,7 @@ public class ValueTracker{
 
 	private static HashMap<String, ArrayList<ValueChangePoint>> valueMap;
 	
-	public static void analysis(String filepath) {
+	public static void analysis(String filepath) throws IOException {
 		valueMap = _analysis(filepath);
 	}
 	
@@ -55,12 +55,12 @@ public class ValueTracker{
 					
 					if (result.containsKey(valueName)) {
 						ArrayList<ValueChangePoint> tmpArrayList = result.get(valueName);
-						string OldValue = tmpArrayList.get(tmpArrayList.size() - 1).value;
+						String OldValue = tmpArrayList.get(tmpArrayList.size() - 1).newValue;
 						tmpArrayList.add(new ValueChangePoint(functionStack.peek(), OldValue, value));
 					} else {
 						ArrayList<ValueChangePoint> tmpArrayList = new ArrayList<ValueChangePoint>();
-						tmpArrayList.add(new ValueChangePoint(valueName, null, value));
-						result.put(functionStack.peek(), tmpArrayList);
+						tmpArrayList.add(new ValueChangePoint(functionStack.peek(), null, value));
+						result.put(valueName, tmpArrayList);
 					}
 				}
 				

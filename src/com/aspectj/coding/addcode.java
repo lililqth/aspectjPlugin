@@ -6,8 +6,20 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
+
+import com.aspectj.demo.Editor;
+
 public class addcode {
-	public static int count = 0;
+	private static int count = 0;
+	public static int getcount(){
+		return count;
+	}
+	public static void setCount(int count) {
+		addcode.count = count;
+	}
+	
 	public static void writeaj(String pathname, String Active, String Way, String selectfuction[], String content) throws IOException{
 		String ajFilename = "\\add"+(count++)+".aj";
 		 BufferedWriter out = new BufferedWriter(new FileWriter(pathname + ajFilename));
@@ -17,18 +29,23 @@ public class addcode {
         	 out.write("|| "+Way+"(" + selectfuction[i]+")");
          }
          out.write(";\n");
-         if(Active == "after( Formals )")
+         if(Active.equals("after( Formals )"))
         	 out.write("	after(): pcut(){\n");
-         if(Active == "before( Formals )")
+         if(Active.equals("before( Formals )"))
         	 out.write("	before(): pcut(){\n");
-         if(Active == "after( Formals ) returning [ ( Formal ) ]")
+         if(Active.equals("after( Formals ) returning [ ( Formal ) ]"))
         	 out.write("	after() returning (Object o): pcut(){\n");
-         if(Active == "after( Formals ) throwing [ ( Formal ) ]")
+         if(Active.equals("after( Formals ) throwing [ ( Formal ) ]"))
         	 out.write("	after() throwing (Exception e): pcut(){\n");
          out.write("	"+content+"\n}\n");
          out.write("}");
          out.close();
-         JOptionPane.showMessageDialog(
-        		    null,"aj鏂囦欢鐢熸垚鎴愬姛");
+         MessageBox messageBox = 
+				   new MessageBox(Editor.shell, 
+				    SWT.OK| 
+				    SWT.CANCEL| 
+				    SWT.ICON_WARNING); 
+				 messageBox.setMessage("aj文件生成！"); 
+				 messageBox.open(); 
 	}
 }

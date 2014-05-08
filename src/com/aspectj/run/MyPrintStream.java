@@ -11,10 +11,6 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-import sun.org.mozilla.javascript.internal.JavaAdapter;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 
 public class MyPrintStream extends PrintStream {
 	private Text text;

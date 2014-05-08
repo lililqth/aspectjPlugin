@@ -13,12 +13,12 @@ import com.aspectj.demo.Frame;
 
 public class Run {
 	public static void runAnalysis(String filepath, String filename,
-			String ajFileName, TextArea text) {
+			String ajFileName) {
 
 		System.setProperty("user.dir", filepath);
 
 		String command = "cmd.exe /c ajc " + "*.java" + " " + Frame.packagename;
-		for (int i = 0; i < addcode.count; i++) {
+		for (int i = 0; i < addcode.getcount(); i++) {
 			command += " add" + i + ".aj";
 		}
 		try {
