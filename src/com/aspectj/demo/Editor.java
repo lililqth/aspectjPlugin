@@ -6,7 +6,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -38,6 +40,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -49,6 +52,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Group;
 import com.aspectj.run.MyPrintStream;
 
 public class Editor {
@@ -497,36 +501,46 @@ public class Editor {
 	{
 		TabItem tab = new TabItem(tabFolder, SWT.NONE);
 		
-		tab.setText("添加代码");
+		tab.setText("AJ控制面板");
 		Composite functionComposite = new Composite(tabFolder, SWT.NONE);
 		functionComposite.setLayout(new FormLayout());
-		//  提交代码按钮
-		Button submitButton = new Button(functionComposite, SWT.NONE);
+		Group insertGroup = new Group(functionComposite,SWT.SHADOW_IN);
+		insertGroup.setText("定义切点");
+		insertGroup.setLayout(new FormLayout());
+		final FormData insertGroupFormData = new FormData();
+		insertGroupFormData.top = new FormAttachment(5, 0);
+		insertGroupFormData.left = new FormAttachment(5, 0);
+		insertGroupFormData.right = new FormAttachment(35, 0);
+		insertGroupFormData.bottom = new FormAttachment(95, 0);
+		insertGroup.setLayoutData(insertGroupFormData);
+		//提交代码按钮
+		Button submitButton = new Button(insertGroup, SWT.NONE);
 		submitButton.setText("提交代码");
 		final FormData submitButtonFormData = new FormData();
-		submitButtonFormData.top = new FormAttachment(80, -15);
-		submitButtonFormData.left = new FormAttachment(10, -40);
-		submitButtonFormData.right = new FormAttachment(10, +40);
-		submitButtonFormData.bottom = new FormAttachment(80, +15);
+		submitButtonFormData.top = new FormAttachment(85, 0);
+		submitButtonFormData.left = new FormAttachment(5, 0);
+		submitButtonFormData.right = new FormAttachment(30, 0);
+		submitButtonFormData.bottom = new FormAttachment(95, 0);
 		submitButton.setLayoutData(submitButtonFormData);
-		Button compilingtButton = new Button(functionComposite, SWT.NONE);
+		//编译执行按钮
+		Button compilingtButton = new Button(insertGroup, SWT.NONE);
 		compilingtButton.setText("编译执行");
 		final FormData compilButtonFormData = new FormData();
-		compilButtonFormData.top = new FormAttachment(80, -15);
-		compilButtonFormData.left = new FormAttachment(10, +160);
-		compilButtonFormData.right = new FormAttachment(10, +240);
-		compilButtonFormData.bottom = new FormAttachment(80, +15);
+		compilButtonFormData.top = new FormAttachment(85, 0);
+		compilButtonFormData.left = new FormAttachment(70, 0);
+		compilButtonFormData.right = new FormAttachment(95, 0);
+		compilButtonFormData.bottom = new FormAttachment(95, 0);
 		compilingtButton.setLayoutData(compilButtonFormData);
-		
-		Text insertText  = new Text(functionComposite, SWT.BORDER);
+		// 文本输入框
+		Text insertText  = new Text(insertGroup, SWT.BORDER);
 		final FormData textFormData = new FormData();
-		textFormData.top = new FormAttachment(30, 0);
-		textFormData.left = new FormAttachment(10, -40);
-		textFormData.right = new FormAttachment(10, +240);
-		textFormData.bottom = new FormAttachment(70, 0);
+		textFormData.top = new FormAttachment(40, 0);
+		textFormData.left = new FormAttachment(5, 0);
+		textFormData.right = new FormAttachment(95, 0);
+		textFormData.bottom = new FormAttachment(80, 0);
 		insertText.setLayoutData(textFormData);
-		
-		Combo activeCombo = new Combo(functionComposite, SWT.DROP_DOWN|SWT.READ_ONLY);
+		//切点位置下拉框
+		Combo activeCombo = new Combo(insertGroup, SWT.DROP_DOWN|SWT.READ_ONLY);
 		activeCombo.add("before( Formals )");
 		activeCombo.add("after( Formals ) returning [ ( Formal ) ]");
 		activeCombo.add("after( Formals ) throwing [ ( Formal ) ]");
@@ -534,41 +548,87 @@ public class Editor {
 		activeCombo.add("Type around( Formals )");
 		activeCombo.setText("before( Formals )");
 		final FormData activeComboFormData = new FormData();
-		activeComboFormData.top = new FormAttachment(10, -15);
-		activeComboFormData.left = new FormAttachment(10, +20);
-		activeComboFormData.right = new FormAttachment(10, +240);
-		activeComboFormData.bottom = new FormAttachment(10, +15);
+		activeComboFormData.top = new FormAttachment(5, 0);
+		activeComboFormData.left = new FormAttachment(30, 0);
+		activeComboFormData.right = new FormAttachment(95, 0);
+		activeComboFormData.bottom = new FormAttachment(15, 0);
 		activeCombo.setLayoutData(activeComboFormData);
-		
-		Combo wayCombo = new Combo(functionComposite, SWT.DROP_DOWN|SWT.READ_ONLY);
+		//切点类型下拉框
+		Combo wayCombo = new Combo(insertGroup, SWT.DROP_DOWN|SWT.READ_ONLY);
 		wayCombo.add("execution");
 		wayCombo.add("call");
 		wayCombo.setText("execution");
 		final FormData wayComboFormData = new FormData();
-		wayComboFormData.top = new FormAttachment(22, -15);
-		wayComboFormData.left = new FormAttachment(10, +20);
-		wayComboFormData.right = new FormAttachment(10, +240);
-		wayComboFormData.bottom = new FormAttachment(22, +15);
+		wayComboFormData.top = new FormAttachment(25, 0);
+		wayComboFormData.left = new FormAttachment(30, 0);
+		wayComboFormData.right = new FormAttachment(95, 0);
+		wayComboFormData.bottom = new FormAttachment(35, 0);
 		wayCombo.setLayoutData(wayComboFormData);
 		
 		
-		Label activeLabel = new Label(functionComposite, SWT.NONE);
+		Label activeLabel = new Label(insertGroup, SWT.NONE);
 		activeLabel.setText("Active");
 		final FormData activeLabelFormData = new FormData();
-		activeLabelFormData.top = new FormAttachment(10, -15);
-		activeLabelFormData.left = new FormAttachment(10, -40);
-		activeLabelFormData.right = new FormAttachment(10, +10);
-		activeLabelFormData.bottom = new FormAttachment(10, +15);
+		activeLabelFormData.top = new FormAttachment(5, 0);
+		activeLabelFormData.left = new FormAttachment(5, 0);
+		activeLabelFormData.right = new FormAttachment(25, 0);
+		activeLabelFormData.bottom = new FormAttachment(15, 0);
 		activeLabel.setLayoutData(activeLabelFormData);
 		
-		Label wayLabel = new Label(functionComposite, SWT.NONE);
+		Label wayLabel = new Label(insertGroup, SWT.NONE);
 		wayLabel.setText("Way");
 		final FormData wayLabelFormData = new FormData();
-		wayLabelFormData.top = new FormAttachment(22, -15);
-		wayLabelFormData.left = new FormAttachment(10, -40);
-		wayLabelFormData.right = new FormAttachment(10, +10);
-		wayLabelFormData.bottom = new FormAttachment(22, +15);
+		wayLabelFormData.top = new FormAttachment(25, 0);
+		wayLabelFormData.left = new FormAttachment(5, 0);
+		wayLabelFormData.right = new FormAttachment(25, 0);
+		wayLabelFormData.bottom = new FormAttachment(35, 0);
 		wayLabel.setLayoutData(wayLabelFormData);
+		
+		Group variateGroup = new Group(functionComposite, SWT.SHADOW_IN);  
+		variateGroup.setText("变量跟踪");
+		variateGroup.setLayout(new FormLayout());
+		final FormData variateGroupFormData = new FormData();
+		variateGroupFormData.top = new FormAttachment(5, 0);
+		variateGroupFormData.left = new FormAttachment(45, 0);
+		variateGroupFormData.right = new FormAttachment(80, 0);
+		variateGroupFormData.bottom = new FormAttachment(95, 0);
+		variateGroup.setLayoutData(variateGroupFormData);
+		
+		Label variateLabel = new Label(variateGroup, SWT.NONE);
+		variateLabel.setText("输入变量名：");
+		final FormData variateLabelFormData = new FormData();
+		variateLabelFormData.top = new FormAttachment(5, 0);
+		variateLabelFormData.left = new FormAttachment(5, 0);
+		variateLabelFormData.right = new FormAttachment(25, 0);
+		variateLabelFormData.bottom = new FormAttachment(15, 0);
+		variateLabel.setLayoutData(variateLabelFormData);
+		//变量名输入
+		Text variateText  = new Text(variateGroup, SWT.BORDER);
+		final FormData variateTextFormData = new FormData();
+		variateTextFormData.top = new FormAttachment(5, 0);
+		variateTextFormData.left = new FormAttachment(30, 0);
+		variateTextFormData.right = new FormAttachment(95, 0);
+		variateTextFormData.bottom = new FormAttachment(11, 0);
+		variateText.setLayoutData(variateTextFormData);
+		
+		Label variateLogLabel = new Label(variateGroup, SWT.NONE);
+		variateLogLabel.setText("变量值跟踪记录：");
+		final FormData variateLogLabelFormData = new FormData();
+		variateLogLabelFormData.top = new FormAttachment(25, 0);
+		variateLogLabelFormData.left = new FormAttachment(5, 0);
+		variateLogLabelFormData.right = new FormAttachment(100, 0);
+		variateLogLabelFormData.bottom = new FormAttachment(35, 0);
+		variateLogLabel.setLayoutData(variateLogLabelFormData);
+		
+		List variateList = new List(variateGroup,SWT.MULTI|SWT.BORDER);
+		final FormData variateListFormData = new FormData();
+		variateListFormData.top = new FormAttachment(40, 0);
+		variateListFormData.left = new FormAttachment(5, 0);
+		variateListFormData.right = new FormAttachment(95, 0);
+		variateListFormData.bottom = new FormAttachment(95, 0);
+		variateList.setLayoutData(variateListFormData);
+		variateList.add("测试");
+		variateList.add("测试");
 		tab.setControl(functionComposite);
 		tabFolder.setSelection(tab);
 		
@@ -614,3 +674,4 @@ public class Editor {
 		display.dispose();
 	}
 }
+
