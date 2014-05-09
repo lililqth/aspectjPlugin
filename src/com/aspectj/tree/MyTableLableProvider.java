@@ -5,12 +5,13 @@ import java.util.regex.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TreeItem;
 
+import com.aspectj.demo.Editor;
 import com.aspectj.demo.Frame;
 
 class MyTableLableProvider implements ITableLabelProvider{
-	String functionName[] = Frame.getfunctionnamearray();;
-	int functionTime[] = Frame.getfunctiontimearray();
-	int functionLength = Frame.getfunctionlenth();
+	String functionName[] = Editor.getfunctionnamearray();;
+	int functionTime[] = Editor.getfunctiontimearray();
+	int functionLength = Editor.getfunctionlenth();
     public Image getColumnImage(Object element, int columnIndex) {
         return null;
     }

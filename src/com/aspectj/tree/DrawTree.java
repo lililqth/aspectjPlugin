@@ -19,14 +19,14 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
 
+import com.aspectj.demo.Editor;
 import com.aspectj.demo.Frame;
 
-import sun.org.mozilla.javascript.internal.ast.ParenthesizedExpression;
 
 public class DrawTree {
 	private static DrawTree drawTree;
-	private Display display = new Display();
-	Shell shell = new Shell(display, SWT.DIALOG_TRIM /*| SWT.APPLICATION_MODAL
+	private Display display = Editor.display;
+	Shell shell = new Shell( display, SWT.DIALOG_TRIM /*| SWT.APPLICATION_MODAL
 			| SWT.ON_TOP*/);
 	Composite composite = null;
 	Composite compositeImage = null;
@@ -172,7 +172,6 @@ public class DrawTree {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		display.dispose();
 	}
 
 	void makeColumn() {

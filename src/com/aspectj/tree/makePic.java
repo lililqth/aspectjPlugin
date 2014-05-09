@@ -7,12 +7,12 @@ import java.util.regex.Pattern;
 import org.eclipse.swt.internal.win32.SIZE;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.aspectj.demo.Frame;
+import com.aspectj.demo.Editor;
 
 public class makePic {
-	String functionName[] = Frame.getfunctionnamearray();
-	int functionTime[] = Frame.getfunctiontimearray();
-	int functionLength = Frame.getfunctionlenth();
+	String functionName[] = Editor.getfunctionnamearray();
+	int functionTime[] = Editor.getfunctiontimearray();
+	int functionLength = Editor.getfunctionlenth();
 	DrawTree drawTree;
 	GraphViz gv = null;
 

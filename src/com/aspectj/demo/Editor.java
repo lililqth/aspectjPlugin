@@ -60,6 +60,9 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -69,10 +72,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.aspectj.analysis.AnalysisTool;
+import com.aspectj.analysis.ValueChangePoint;
+import com.aspectj.analysis.ValueTracker;
 import com.aspectj.coding.addcode;
 import com.aspectj.coding.findpackage;
 import com.aspectj.run.MyPrintStream;
 import com.aspectj.run.Run;
+import com.aspectj.tree.DrawTree;
+import com.aspectj.tree.xmlResultTreeNode;
 
 public class Editor {
 	
@@ -85,7 +92,7 @@ public class Editor {
 	private static File editFile = new File("D://Desktop//session.txt");
 	static List functionList = null; //函数列表
 	static Composite centerComposite = null;
-	static Display display = null;
+	public static Display display = null;
 	static File rootDir = null;
 	static Tree tree = null;
 	static ImageRegistry imageRegistry;
@@ -99,7 +106,8 @@ public class Editor {
 	private static String list[] = new String[1000]; //保存函数的名字
 	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
 	private static int functionlenth = 0;              //保存着函数的个数
-	
+	static ArrayList<xmlResultTreeNode> result = null;
+	static ArrayList<ValueChangePoint> variatelog = null;
 	public static String[] getfunctionnamearray(){
 		return list;
 	} //返回函数的名字
@@ -471,8 +479,43 @@ public class Editor {
 		});
 		mntmFontcolor.setText("FontColor");
 
+		
+		//显示树状图的菜单项
+				MenuItem openTreeItem = new MenuItem(menu, SWT.NONE);
+				openTreeItem.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						try {
+							result = AnalysisTool.analysisXMLFile(parentpath
+									+ "\\analysisResult.xml");
+							showtree();
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							
+							e1.printStackTrace();
+						}
+						// DrawTree.getInstance(result.get(0));
+						
+					}
+				});
+				openTreeItem.setText("tree");
 	}
 	
+	public static void showtree()
+	{
+		if (!display.isDisposed()) {
+
+			Runnable runnable = new Runnable() {
+
+				public void run() {
+					DrawTree.getInstance(result.get(0));
+				}
+			};
+			display.syncExec(runnable); // 关键在这一句上
+			
+
+		}
+	}
 	
 
 	public static void createEditTab() {
@@ -752,7 +795,6 @@ public class Editor {
 		variateGroupFormData.right = new FormAttachment(80, 0);
 		variateGroupFormData.bottom = new FormAttachment(95, 0);
 		variateGroup.setLayoutData(variateGroupFormData);
-				
 		Label variateLabel = new Label(variateGroup, SWT.NONE);
 		variateLabel.setText("输入变量名：");
 		final FormData variateLabelFormData = new FormData();
@@ -762,32 +804,90 @@ public class Editor {
 		variateLabelFormData.bottom = new FormAttachment(15, 0);
 		variateLabel.setLayoutData(variateLabelFormData);
 		//变量名输入
-		Text variateText  = new Text(variateGroup, SWT.BORDER);
+		final Text variateText  = new Text(variateGroup, SWT.BORDER);
 		final FormData variateTextFormData = new FormData();
 		variateTextFormData.top = new FormAttachment(5, 0);
 		variateTextFormData.left = new FormAttachment(30, 0);
 		variateTextFormData.right = new FormAttachment(95, 0);
 		variateTextFormData.bottom = new FormAttachment(11, 0);
 		variateText.setLayoutData(variateTextFormData);
-				
+		
 		Label variateLogLabel = new Label(variateGroup, SWT.NONE);
-		variateLogLabel.setText("变量值跟踪记录：");
+		variateLogLabel.setText("变量值跟踪：");
 		final FormData variateLogLabelFormData = new FormData();
 		variateLogLabelFormData.top = new FormAttachment(25, 0);
 		variateLogLabelFormData.left = new FormAttachment(5, 0);
-		variateLogLabelFormData.right = new FormAttachment(100, 0);
+		variateLogLabelFormData.right = new FormAttachment(25, 0);
 		variateLogLabelFormData.bottom = new FormAttachment(35, 0);
 		variateLogLabel.setLayoutData(variateLogLabelFormData);
 				
-		final List variateList = new List(variateGroup,SWT.MULTI|SWT.BORDER);
-		final FormData variateListFormData = new FormData();
-		variateListFormData.top = new FormAttachment(40, 0);
-		variateListFormData.left = new FormAttachment(5, 0);
-		variateListFormData.right = new FormAttachment(95, 0);
-		variateListFormData.bottom = new FormAttachment(95, 0);
-		variateList.setLayoutData(variateListFormData);
-		variateList.add("测试");
-		variateList.add("测试");
+		final Table variateTable = new Table(variateGroup, SWT.MULTI | SWT.BORDER);
+		final FormData variateTableFormData = new FormData();
+		variateTableFormData.top = new FormAttachment(40, 0);
+		variateTableFormData.left = new FormAttachment(5, 0);
+		variateTableFormData.right = new FormAttachment(95, 0);
+		variateTableFormData.bottom = new FormAttachment(95, 0);
+		variateTable.setLayoutData(variateTableFormData);
+		variateTable.setHeaderVisible(true);
+		variateTable.setLinesVisible(true);
+		TableColumn column1 = new TableColumn(variateTable, SWT.NONE);
+		column1.setText("方法");
+		column1.setWidth(150);
+		TableColumn column2 = new TableColumn(variateTable, SWT.NONE);
+		column2.setText("旧值");
+		column2.setWidth(90);
+		TableColumn column3 = new TableColumn(variateTable, SWT.NONE);
+		column3.setText("新值");
+		column3.setWidth(90);
+		
+		//开始跟踪按钮
+		Button startAnalyseButton = new Button(variateGroup, SWT.NONE);
+		startAnalyseButton.setText("开始跟踪");
+		final FormData startAnalyseButtonFormData = new FormData();
+		startAnalyseButtonFormData.top = new FormAttachment(25, 0);
+		startAnalyseButtonFormData.left = new FormAttachment(30, 0);
+		startAnalyseButtonFormData.right = new FormAttachment(95, 0);
+		startAnalyseButtonFormData.bottom = new FormAttachment(33, 0);
+		startAnalyseButton.setLayoutData(startAnalyseButtonFormData);
+		startAnalyseButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					ValueTracker.analysis("test.xml");
+					String nameOfVariate = variateText.getText();
+					variatelog = ValueTracker.getValueList(nameOfVariate);
+					for (ValueChangePoint vcp : variatelog) {
+						TableItem item = new TableItem(variateTable, SWT.NONE);
+						if (vcp.oldValue != null) {
+							item.setText(new String[]{vcp.methodName, vcp.oldValue, vcp.newValue});
+						}
+						else {
+							item.setText(new String[]{vcp.methodName, "尚未初始化", vcp.newValue});
+						}
+						
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block			
+					MessageBox messageBox = 
+							   new MessageBox(shell, 
+							    SWT.OK| 
+							    SWT.CANCEL| 
+							    SWT.ICON_WARNING); 
+							 messageBox.setMessage("找不到变量追踪文件！"); 
+							 messageBox.open();			 
+				}
+				catch (NullPointerException e2) {
+					// TODO: handle exception
+					MessageBox messageBox = 
+							   new MessageBox(shell, 
+							    SWT.OK| 
+							    SWT.CANCEL| 
+							    SWT.ICON_WARNING); 
+							 messageBox.setMessage("找不到变量！"); 
+							 messageBox.open();
+					
+				}
+			}
+		});
 		tab.setControl(functionComposite);
 		tabFolder.setSelection(tab);
 		
