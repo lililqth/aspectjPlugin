@@ -852,19 +852,27 @@ public class Editor {
 		startAnalyseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					ValueTracker.analysis("test.xml");
+					//variateTable.clearAll();
+					variateTable.removeAll();
+					ValueTracker.analysis(parentpath + "\\VT.xml");
 					String nameOfVariate = variateText.getText();
 					variatelog = ValueTracker.getValueList(nameOfVariate);
-					for (ValueChangePoint vcp : variatelog) {
-						TableItem item = new TableItem(variateTable, SWT.NONE);
+					for (int i = 0; i < variatelog.size(); i++) {
+						ValueChangePoint vcp = variatelog.get(i);
+						TableItem item = new TableItem(variateTable, SWT.NONE, i);
+						String[] tmpMethodStrings = vcp.methodName.split(" ");
 						if (vcp.oldValue != null) {
-							item.setText(new String[]{vcp.methodName, vcp.oldValue, vcp.newValue});
+							item.setText(new String[] {
+									tmpMethodStrings[tmpMethodStrings.length - 1],
+									vcp.oldValue, vcp.newValue });
+						} else {
+							item.setText(new String[] {
+									tmpMethodStrings[tmpMethodStrings.length - 1],
+									"尚未初始化", vcp.newValue });
 						}
-						else {
-							item.setText(new String[]{vcp.methodName, "尚未初始化", vcp.newValue});
-						}
-						
+
 					}
+
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block			
 					MessageBox messageBox = 
