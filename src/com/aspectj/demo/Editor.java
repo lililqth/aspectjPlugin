@@ -2,20 +2,22 @@ package com.aspectj.demo;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
-
-
-
-
-
-
-
-
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
@@ -63,12 +65,17 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Group;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import com.aspectj.analysis.AnalysisTool;
 import com.aspectj.coding.addcode;
+import com.aspectj.coding.findpackage;
 import com.aspectj.run.MyPrintStream;
 import com.aspectj.run.Run;
 
 public class Editor {
+	
 	//控件变量列表
 	public static Shell shell = null;
 	private static TabFolder tabFolder = null;
@@ -86,11 +93,13 @@ public class Editor {
 	static Image iconFile = null;
 
 	//文件参数列表
+	private static String packagename;//保存着包的名字
 	private static String parentpath = "E:"; //文件路径
-	private static String javaname;
+	private static String javaname = null;
 	private static String list[] = new String[1000]; //保存函数的名字
 	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
 	private static int functionlenth = 0;              //保存着函数的个数
+	
 	public static String[] getfunctionnamearray(){
 		return list;
 	} //返回函数的名字
@@ -102,6 +111,18 @@ public class Editor {
 	public static int getfunctionlenth(){
 		return functionlenth;
 	} //返回函数的个数
+	
+	public static String getparentpath(){
+		return parentpath;
+	} //返回工程src
+	
+	public static String getjavaname(){
+		return javaname;
+	} //返回main函数绝对地址
+	
+	public static String getpackagename(){
+		return packagename;
+	} //返回main函数绝对地址
 	/**
 	 * @param f
 	 *            文件
@@ -220,6 +241,37 @@ public class Editor {
 		addTab(editfFile, content);
 	}
 
+	protected static void folderDig(Shell parent) throws FileNotFoundException{
+		//新建文件夹（目录）对话框
+		DirectoryDialog folderdlg=new DirectoryDialog(parent);
+		//设置文件对话框的标题
+		folderdlg.setText("文件选择");
+		//设置初始路径
+		folderdlg.setFilterPath("SystemDrive");
+		//设置对话框提示文本信息
+		folderdlg.setMessage("请选择相应的文件夹");
+		//打开文件对话框，返回选中文件夹目录
+		String selecteddir=folderdlg.open();
+		if(selecteddir==null){
+		return ;
+		}
+		else{
+		parentpath = selecteddir;
+		setRootDir(new File(selecteddir));
+		System.out.println("您选中的文件夹目录为："+selecteddir);
+		ArrayList <String> temp = findpackage.getPackageStrings(selecteddir);
+		
+		packagename = parentpath + "\\*.java ";
+		
+		for(int i = 0; i < temp.size();i++){
+				packagename += " "+ parentpath +"\\"+ temp.get(i) + "\\*.java";
+		}
+		
+		System.out.println(parentpath + "  "+ temp.size());
+		}
+		}
+
+	
 	public static void createConsole() {
 
 		// 添加Console
@@ -251,10 +303,80 @@ public class Editor {
 		mntmOpenItem.setText("&Open");
 		mntmOpenItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				String content = getFileContent(editFile);
-				addTab(editFile, content);
+				try {
+					folderDig(shell);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
+		
+		MenuItem mntmanalysisItem = new MenuItem(menu_1, SWT.NONE);
+		mntmanalysisItem.setText("&analysis");
+		mntmanalysisItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+
+				AnalysisTool.analysis(javaname);
+				
+				/***************读取xml信息***************************************/
+				String pathname = parentpath+"\\analysisResult.xml";
+				try {
+					Thread.sleep(2500);
+				} catch (InterruptedException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					FileWriter fw = new FileWriter(pathname, true);
+					fw.write("</functions>");
+					fw.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
+				//System.out.println(pathname);
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				try
+				{
+					DocumentBuilder db = dbf.newDocumentBuilder();
+					org.w3c.dom.Document doc = db.parse(pathname);
+
+					NodeList startList = doc.getElementsByTagName("start");
+					System.out.println("共有" + startList.getLength() + "个start节点");
+					
+					int j =0 , k = 0;
+					for (int i = 0; i < startList.getLength(); i++)
+					{
+						Node start = startList.item(i);
+						String name = start.getTextContent(); 
+						System.out.println(name);
+						for(j = 0; j < k; j++){
+							if(name.equals(list[j])==true){
+								functiontime[j]++;
+								break;
+							}
+						}
+						if(j == k){
+							functiontime[k] = 1;
+							list[k++] = name;
+						}
+					}//去重（去除文件名中重复的部分）
+					for(int i = 0; i < k; i++){
+						functionList.add(list[i]);
+					}
+					functionlenth = k;
+				}
+				catch (Exception e1)
+				{
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		
 		MenuItem mntmTest = new MenuItem(menu_1, SWT.NONE);
 		mntmTest.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -338,6 +460,8 @@ public class Editor {
 		mntmFontcolor.setText("FontColor");
 
 	}
+	
+	
 
 	public static void createEditTab() {
 		tabFolder = new TabFolder(centerComposite, SWT.H_SCROLL | SWT.V_SCROLL
@@ -433,7 +557,7 @@ public class Editor {
 		TabItem functionTabItem = new TabItem(fileTabFolder, SWT.NONE);
 		functionList = new List(fileTabFolder,SWT.MULTI|SWT.BORDER);
 		functionTabItem.setText("函数");
-		functionList.add("Functin 1");
+		//functionList.add("Functin 1");
 		functionTabItem.setControl(functionList);
 		
 		//文件目录，树状图
@@ -475,6 +599,8 @@ public class Editor {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				TreeItem item = (TreeItem) e.item;
 				File file = (File) item.getData();
+				javaname = file.getAbsolutePath();
+				System.out.println(javaname);
 				addTab(file, getFileContent(file));
 //				if (Program.launch(file.getAbsolutePath())) {
 //					System.out.println("File has been launched: " + file);
@@ -801,5 +927,6 @@ public class Editor {
 		}
 		display.dispose();
 	}
+	
 }
 

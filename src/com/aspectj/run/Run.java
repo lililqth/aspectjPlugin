@@ -8,7 +8,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 
+
 import com.aspectj.coding.addcode;
+import com.aspectj.demo.Editor;
 import com.aspectj.demo.Frame;
 
 public class Run {
@@ -17,7 +19,7 @@ public class Run {
 
 		System.setProperty("user.dir", filepath);
 
-		String command = "cmd.exe /c ajc " + "*.java" + " " + Frame.packagename;
+		String command = "cmd.exe /c ajc " + "*.java" + " " + Editor.getpackagename();
 		for (int i = 0; i < addcode.getcount(); i++) {
 			command += " add" + i + ".aj";
 		}

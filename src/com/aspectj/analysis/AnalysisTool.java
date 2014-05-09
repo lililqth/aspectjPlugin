@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.regex.*;
 
+import com.aspectj.demo.Editor;
 import com.aspectj.demo.Frame;
 import com.aspectj.tree.xmlResultTreeNode;
 
@@ -53,7 +54,8 @@ public class AnalysisTool {
 		
 		System.setProperty("user.dir", filepath);
 		
-		String command = "cmd.exe /c  ajc " + filename + " " + ajFileName +" "+ Frame.packagename;
+		//String command = "cmd.exe /c  ajc " + filename + " " + ajFileName +" "+ Editor.getpackagename();
+		String command = "cmd.exe /c  ajc " + filename + " " + ajFileName +" "+ Editor.getpackagename();
 		try {
 			Runtime.getRuntime().exec(command, null, new File(filepath));
 			System.out.println(command);
@@ -66,10 +68,9 @@ public class AnalysisTool {
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-
-		command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " 
-				+ filename.substring(0, filename.indexOf(".java"));
-		
+		System.out.println(filename.substring(0, filename.indexOf(".java")));
+		command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " + filename.substring(0, filename.indexOf(".java"));
+		//command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " + "HelloWorld";
 		try {
 			Runtime.getRuntime().exec(command, null, new File(filepath));
 		} catch (IOException e) {
@@ -84,9 +85,8 @@ public class AnalysisTool {
 	public static void analysis(String pathname) {
 		
 		// Get filepath & filename
-		File analysisFile = new File(pathname);
-		String filepath = analysisFile.getParent();
-		String filename = analysisFile.getName();
+		String filepath = Editor.getparentpath();
+		String filename = Editor.getjavaname();
 		
 		// Generate ajFileName
 		String ajFileName = "aspectjanalysictempfile.aj";
