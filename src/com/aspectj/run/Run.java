@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 
 
 
+
 import com.aspectj.coding.addcode;
 import com.aspectj.demo.Editor;
 import com.aspectj.demo.Frame;
@@ -39,8 +40,11 @@ public class Run {
 			e1.printStackTrace();
 		}
 		// command = "ping www.baidu.com";
+
 		command = "cmd.exe /c java -classpath \"" + filename.substring(0, filename.lastIndexOf('\\'))
 				+"\" " + filename.substring(filename.lastIndexOf('\\')+1, filename.indexOf(".java"));
+		//command = "cmd.exe /c java -classpath \"" + filename;
+		//command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " + "HelloWorld";
 		for (int i = 0; i < addcode.getcount(); i++) {
 			command += " add" + i;
 		}

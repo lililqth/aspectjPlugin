@@ -316,8 +316,20 @@ public class Editor {
 		mntmanalysisItem.setText("&analysis");
 		mntmanalysisItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-
-				AnalysisTool.analysis(javaname);
+				if(javaname != null){
+					System.out.println(javaname);
+					AnalysisTool.analysis(javaname);
+				}
+				else {
+					MessageBox messageBox = 
+							   new MessageBox(shell, 
+							    SWT.OK| 
+							    SWT.CANCEL| 
+							    SWT.ICON_WARNING); 
+							 messageBox.setMessage("找不到主类！"); 
+							 messageBox.open(); 
+				}
+				setRootDir(new File(parentpath));
 				
 				/***************读取xml信息***************************************/
 				String pathname = parentpath+"\\analysisResult.xml";
@@ -599,7 +611,8 @@ public class Editor {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				TreeItem item = (TreeItem) e.item;
 				File file = (File) item.getData();
-				javaname = file.getAbsolutePath();
+				if(javaname == null)
+					javaname = file.getAbsolutePath();
 				System.out.println(javaname);
 				addTab(file, getFileContent(file));
 //				if (Program.launch(file.getAbsolutePath())) {
@@ -796,9 +809,11 @@ public class Editor {
 				   String selectname[] = new String[100];
 				   String content = insertText.getText();
 					
-				   selectname = functionList.getItems();
+				   selectname = functionList.getSelection();
 					try {
 						addcode.writeaj(parentpath, active, way, selectname, content);
+						setRootDir(new File(parentpath));
+
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -827,6 +842,7 @@ public class Editor {
 				   }
 				   else{
 				   Run.runAnalysis(parentpath, javaname, ".aj");
+				   System.out.println(javaname);
 				   setRootDir(new File(parentpath));
 				   }
 			   }
@@ -850,7 +866,6 @@ public class Editor {
 					   addcode.setCount(num);
 					   delete("add"+num+".aj");
 					   delete("add"+num+".class");
-					   setRootDir(new File(parentpath));
 					   MessageBox messageBox = 
 							   new MessageBox(shell, 
 							    SWT.OK| 
@@ -858,7 +873,18 @@ public class Editor {
 							    SWT.ICON_WARNING); 
 							 messageBox.setMessage("撤销完成！"); 
 							 messageBox.open(); 
+						setRootDir(new File(parentpath));
 				   }
+				   else{
+					   MessageBox messageBox = 
+							   new MessageBox(shell, 
+							    SWT.OK| 
+							    SWT.CANCEL| 
+							    SWT.ICON_WARNING); 
+							 messageBox.setMessage("您还未执行任何操作！"); 
+							 messageBox.open(); 
+				   }
+				   
 			   }
 		});
 		
@@ -879,15 +905,24 @@ public class Editor {
 						   delete("add"+i+".aj");     //清除操作
 					   		delete("add"+i+".class");     //清除操作
 					   }
+					   setRootDir(new File(parentpath));
+					   MessageBox messageBox = 
+							   new MessageBox(shell, 
+							    SWT.OK| 
+							    SWT.CANCEL| 
+							    SWT.ICON_WARNING); 
+							 messageBox.setMessage("重做完成！"); 
+							 messageBox.open(); 
 				   }
-				   setRootDir(new File(parentpath));
-				   MessageBox messageBox = 
-						   new MessageBox(shell, 
-						    SWT.OK| 
-						    SWT.CANCEL| 
-						    SWT.ICON_WARNING); 
-						 messageBox.setMessage("重做完成！"); 
-						 messageBox.open(); 
+				   else{
+					   MessageBox messageBox = 
+							   new MessageBox(shell, 
+							    SWT.OK| 
+							    SWT.CANCEL| 
+							    SWT.ICON_WARNING); 
+							 messageBox.setMessage("您还未执行任何操作！"); 
+							 messageBox.open(); 
+				   }
 			   }
 		});
 		

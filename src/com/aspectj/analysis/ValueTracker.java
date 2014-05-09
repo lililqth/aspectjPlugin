@@ -2,19 +2,17 @@ package com.aspectj.analysis;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
 public class ValueTracker{
 
-	private static HashMap<String, ArrayList<ValueChangePoint>> valueMap;
+	public static HashMap<String, ArrayList<ValueChangePoint>> valueMap;
 	
 	public static void analysis(String filepath) throws IOException {
 		valueMap = _analysis(filepath);
@@ -48,10 +46,10 @@ public class ValueTracker{
 				}
 				
 				// 将变量加入 result 集 
-				else if (tmpString.startsWith("value")) {
+				else if (tmpString.startsWith("<value>")) {
 					tmpString = tmpString.replace("<value>", "").replace("</value>", "");
-					String valueName = tmpString.split("||")[0];
-					String value = tmpString.split("||")[1];
+					String valueName = tmpString.split("\\|\\|")[0];
+					String value = tmpString.split("\\|\\|")[1];
 					
 					if (result.containsKey(valueName)) {
 						ArrayList<ValueChangePoint> tmpArrayList = result.get(valueName);
@@ -78,11 +76,15 @@ public class ValueTracker{
 		if (valueMap == null) {
 			throw new NullPointerException();
 		}
+		
 		// 寻找变量并返回其 ArrayList
 		else {
 			Iterator<Entry<String, ArrayList<ValueChangePoint>>> it = valueMap.entrySet().iterator();
+			
+			// 遍历字典中的每个 Keys, 看看是否存在
 			while (it.hasNext()) {
-				String keyName = it.next().getKey();
+				Entry<String, ArrayList<ValueChangePoint>> entry = it.next();
+				String keyName = entry.getKey();
 				
 				// 判断是否为 类.属性 的格式
 				String startSymbol;
@@ -92,10 +94,12 @@ public class ValueTracker{
 					startSymbol = ".";
 				}
 				
+				// 寻找结果
 				if (keyName.endsWith(startSymbol + valueName)) {
-					return valueMap.get(keyName);
+					return entry.getValue();
 				}
 			}
+			
 			// 不存在该变量则报错
 			throw new NullPointerException();
 		}
