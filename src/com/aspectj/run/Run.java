@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 
 
 
+
 import com.aspectj.coding.addcode;
 import com.aspectj.demo.Editor;
 import com.aspectj.demo.Frame;
@@ -19,7 +20,7 @@ public class Run {
 
 		System.setProperty("user.dir", filepath);
 
-		String command = "cmd.exe /c ajc " + "*.java" + " " + Editor.getpackagename();
+		String command = "cmd.exe /c ajc " + Editor.getpackagename();
 		for (int i = 0; i < addcode.getcount(); i++) {
 			command += " add" + i + ".aj";
 		}
@@ -40,8 +41,12 @@ public class Run {
 		// command = "ping www.baidu.com";
 		command = "cmd.exe /c java -classpath \"" + filename.substring(0, filename.lastIndexOf('\\'))
 				+"\" " + filename.substring(filename.lastIndexOf('\\')+1, filename.indexOf(".java"));
+		for (int i = 0; i < addcode.getcount(); i++) {
+			command += " add" + i;
+		}
 		try {
 			Process p = Runtime.getRuntime().exec(command);
+			System.out.println(command);
 			InputStream is = p.getInputStream();
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					is));

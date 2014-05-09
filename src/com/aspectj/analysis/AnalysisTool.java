@@ -55,7 +55,7 @@ public class AnalysisTool {
 		System.setProperty("user.dir", filepath);
 		
 		//String command = "cmd.exe /c  ajc " + filename + " " + ajFileName +" "+ Editor.getpackagename();
-		String command = "cmd.exe /c  ajc " + filename + " " + ajFileName +" "+ Editor.getpackagename();
+		String command = "cmd.exe /c  ajc " + ajFileName +" "+ Editor.getpackagename();
 		try {
 			Runtime.getRuntime().exec(command, null, new File(filepath));
 			System.out.println(command);
@@ -69,10 +69,13 @@ public class AnalysisTool {
 			e1.printStackTrace();
 		}
 		System.out.println(filename.substring(0, filename.indexOf(".java")));
-		command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " + filename.substring(0, filename.indexOf(".java"));
-		//command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " + "HelloWorld";
+		//command = "cmd.exe /c java -classpath \"" + filename.substring(0, filename.indexOf(".java"))+" "+ajFileName.substring(0, ajFileName.indexOf(".aj"));
+		//command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " + "HelloWorld "+ajFileName.substring(0, ajFileName.indexOf(".aj"));
+		command = "cmd.exe /c java -classpath \"" + filename.substring(0, filename.lastIndexOf('\\'))
+				+"\" " + filename.substring(filename.lastIndexOf('\\')+1, filename.indexOf(".java"))+" "+ajFileName.substring(0, ajFileName.indexOf(".aj"));
 		try {
 			Runtime.getRuntime().exec(command, null, new File(filepath));
+			System.out.println(command);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

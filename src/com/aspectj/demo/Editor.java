@@ -816,7 +816,19 @@ public class Editor {
 		compilingtButton.setLayoutData(compilButtonFormData);
 		compilingtButton.addSelectionListener(new SelectionAdapter() {
 			   public void widgetSelected(SelectionEvent e) {
+				   if(javaname == null){
+					   MessageBox messageBox = 
+							   new MessageBox(shell, 
+							    SWT.OK| 
+							    SWT.CANCEL| 
+							    SWT.ICON_WARNING); 
+							 messageBox.setMessage("找不到主类！"); 
+							 messageBox.open(); 
+				   }
+				   else{
 				   Run.runAnalysis(parentpath, javaname, ".aj");
+				   setRootDir(new File(parentpath));
+				   }
 			   }
 		 });
 		
@@ -837,6 +849,8 @@ public class Editor {
 					   num--;
 					   addcode.setCount(num);
 					   delete("add"+num+".aj");
+					   delete("add"+num+".class");
+					   setRootDir(new File(parentpath));
 					   MessageBox messageBox = 
 							   new MessageBox(shell, 
 							    SWT.OK| 
@@ -861,9 +875,12 @@ public class Editor {
 				   int num = addcode.getcount();
 				   if(num >= 1){
 					   addcode.setCount(0);
-					   for(int i = 0; i < num; i++)
+					   for(int i = 0; i < num; i++){
 						   delete("add"+i+".aj");     //清除操作
+					   		delete("add"+i+".class");     //清除操作
+					   }
 				   }
+				   setRootDir(new File(parentpath));
 				   MessageBox messageBox = 
 						   new MessageBox(shell, 
 						    SWT.OK| 
