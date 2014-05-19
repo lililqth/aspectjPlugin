@@ -1,6 +1,7 @@
 package com.aspectj.coding;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -21,7 +22,9 @@ public class addcode {
 	}
 	
 	public static void writeaj(String pathname, String Active, String Way, String selectfuction[], String content) throws IOException{
-		String ajFilename = "\\add"+(count++)+".aj";
+		 File f = new File(pathname+"\\addaj");
+			f.mkdir();
+		 String ajFilename = "\\addaj\\add"+(count++)+".aj";
 		 BufferedWriter out = new BufferedWriter(new FileWriter(pathname + ajFilename));
          out.write("public aspect add"+(count - 1)+"{\n");
          out.write("	pointcut pcut():"+ Way +"("+ selectfuction[0]+")");

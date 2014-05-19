@@ -103,11 +103,15 @@ public class Editor {
 	private static String packagename;//保存着包的名字
 	private static String parentpath = "E:"; //文件路径
 	private static String javaname = null;
+	private static String mainjava = null;
 	private static String list[] = new String[1000]; //保存函数的名字
 	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
 	private static int functionlenth = 0;              //保存着函数的个数
 	static ArrayList<xmlResultTreeNode> result = null;
 	static ArrayList<ValueChangePoint> variatelog = null;
+	public static String getmainjava(){
+		return mainjava;
+	}
 	public static String[] getfunctionnamearray(){
 		return list;
 	} //返回函数的名字
@@ -653,9 +657,12 @@ public class Editor {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				TreeItem item = (TreeItem) e.item;
 				File file = (File) item.getData();
-				if(javaname == null)
+				if(javaname == null){
 					javaname = file.getAbsolutePath();
-				System.out.println(javaname);
+					mainjava = file.getName();
+				System.out.println(file.getName());
+				}
+				
 				addTab(file, getFileContent(file));
 //				if (Program.launch(file.getAbsolutePath())) {
 //					System.out.println("File has been launched: " + file);
@@ -915,8 +922,9 @@ public class Editor {
 				   String way = wayCombo.getText();
 				   String selectname[] = new String[100];
 				   String content = insertText.getText();
-					
+				   
 				   selectname = functionList.getSelection();
+				   if(selectname.length > 0){
 					try {
 						addcode.writeaj(parentpath, active, way, selectname, content);
 						setRootDir(new File(parentpath));
@@ -924,7 +932,16 @@ public class Editor {
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					}				   
+					}}
+				   else{
+					   MessageBox messageBox = 
+							   new MessageBox(shell, 
+							    SWT.OK| 
+							    SWT.CANCEL| 
+							    SWT.ICON_WARNING); 
+							 messageBox.setMessage("找不到对应的函数！"); 
+							 messageBox.open(); 
+				   }
 				   }
 				  });
 		//编译执行按钮
@@ -971,8 +988,8 @@ public class Editor {
 				   if(num >= 1){
 					   num--;
 					   addcode.setCount(num);
-					   delete("add"+num+".aj");
-					   delete("add"+num+".class");
+					   //delete("add"+num+".aj");
+					   //delete("add"+num+".class");
 					   MessageBox messageBox = 
 							   new MessageBox(shell, 
 							    SWT.OK| 
@@ -1006,12 +1023,13 @@ public class Editor {
 		redoButton.addSelectionListener(new SelectionAdapter() {
 			   public void widgetSelected(SelectionEvent e) {
 				   int num = addcode.getcount();
-				   if(num >= 1){
-					   addcode.setCount(0);
-					   for(int i = 0; i < num; i++){
-						   delete("add"+i+".aj");     //清除操作
-					   		delete("add"+i+".class");     //清除操作
-					   }
+				   if(num>-1){
+					   num++;
+					   addcode.setCount(num);
+//					   for(int i = 0; i < num; i++){
+//						   delete("add"+i+".aj");     //清除操作
+//					   		delete("add"+i+".class");     //清除操作
+//					   }
 					   setRootDir(new File(parentpath));
 					   MessageBox messageBox = 
 							   new MessageBox(shell, 
@@ -1027,7 +1045,7 @@ public class Editor {
 							    SWT.OK| 
 							    SWT.CANCEL| 
 							    SWT.ICON_WARNING); 
-							 messageBox.setMessage("您还未执行任何操作或者已经初始化！"); 
+							 messageBox.setMessage("您还未执行任何撤销操作！"); 
 							 messageBox.open(); 
 				   }
 			   }

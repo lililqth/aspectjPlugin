@@ -52,31 +52,30 @@ public class AnalysisTool {
 	 */
 	public static void _runAnalysis(String filepath, String filename, String ajFileName) {
 		
-		System.setProperty("user.dir", filepath);
-		
+//		System.setProperty("user.dir", filepath);
+//		System.out.println("current address:"+filepath);
 		//String command = "cmd.exe /c  ajc " + filename + " " + ajFileName +" "+ Editor.getpackagename();
-		String command = "cmd.exe /c  ajc " + ajFileName +" "+ Editor.getpackagename();
+		//String command = "cmd.exe /c  ajc " + ajFileName +" "+ Editor.getpackagename();
+		String command = "cmd.exe /c ajc -d bin " + Editor.getpackagename(); 
+		command += " *.aj";
+		command += " -cp " +"C:/aspectj1.7/lib/aspectjrt.jar -1.7";
 		try {
-			Runtime.getRuntime().exec(command, null, new File(filepath));
+			Process pcProcess = Runtime.getRuntime().exec(command, null, new File(filepath));
+			pcProcess.waitFor();
 			System.out.println(command);
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 		System.out.println(filename.substring(0, filename.indexOf(".java")));
-		//command = "cmd.exe /c java -classpath \"" + filename.substring(0, filename.indexOf(".java"))+" "+ajFileName.substring(0, ajFileName.indexOf(".aj"));
-		//command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " + "HelloWorld "+ajFileName.substring(0, ajFileName.indexOf(".aj"));
-		command = "cmd.exe /c java -classpath \"" + filename.substring(0, filename.lastIndexOf('\\'))
-				+"\" " + filename.substring(filename.lastIndexOf('\\')+1, filename.indexOf(".java"))+" "+ajFileName.substring(0, ajFileName.indexOf(".aj"));
+
+		command = "cmd.exe /c java -cp bin;C:/aspectj1.7/lib/aspectjrt.jar " 
+				+ Editor.getmainjava().substring(0, Editor.getmainjava().indexOf(".java"));//+ filename.substring(0, filename.indexOf(".java"));
 		try {
-			Runtime.getRuntime().exec(command, null, new File(filepath));
+			int b = Runtime.getRuntime().exec(command, null, new File(filepath)).waitFor();
 			System.out.println(command);
-		} catch (IOException e) {
+			System.out.println("分析结果: "+b);
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

@@ -11,6 +11,17 @@ import java.io.InputStreamReader;
 
 
 
+
+
+
+
+
+
+
+import javax.sql.CommonDataSource;
+
+import org.eclipse.core.commands.Command;
+
 import com.aspectj.coding.addcode;
 import com.aspectj.demo.Editor;
 import com.aspectj.demo.Frame;
@@ -19,52 +30,30 @@ public class Run {
 	public static void runAnalysis(String filepath, String filename,
 			String ajFileName) {
 
-		System.setProperty("user.dir", filepath);
-
-		String command = "cmd.exe /c ajc " + Editor.getpackagename();
-		for (int i = 0; i < addcode.getcount(); i++) {
-			command += " add" + i + ".aj";
-		}
+//		System.setProperty("user.dir", filepath);
+//		System.out.println("current path:"+filepath);
+		String command = "cmd.exe /c ajc -d bin " + Editor.getpackagename();
+		for (int i = 0; i < addcode.getcount(); i++)
+			command += " " + filepath + "\\addaj\\add"+i+".aj ";
+		command += "-cp " +"C:/aspectj1.7/lib/aspectjrt.jar -1.7";
 		try {
-			Runtime.getRuntime().exec(command, null, new File(filepath));
+			Process pcProcess = Runtime.getRuntime().exec(command, null, new File(filepath));
+			pcProcess.waitFor();
 			System.out.println(command);
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+//		System.setProperty("user.dir", filepath+"\\temp");
+//		System.out.println("user: "+System.getProperty("user.dir"));
+		command = "cmd.exe /c java -cp bin;C:/aspectj1.7/lib/aspectjrt.jar " 
+				+ Editor.getmainjava().substring(0, Editor.getmainjava().indexOf(".java"));//+ filename.substring(0, filename.indexOf(".java"));
 		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// command = "ping www.baidu.com";
-
-		command = "cmd.exe /c java -classpath \"" + filename.substring(0, filename.lastIndexOf('\\'))
-				+"\" " + filename.substring(filename.lastIndexOf('\\')+1, filename.indexOf(".java"));
-		//command = "cmd.exe /c java -classpath \"" + filename;
-		//command = "cmd.exe /c  java -cp \".;%CLASSPATH%\" " + "HelloWorld";
-		for (int i = 0; i < addcode.getcount(); i++) {
-			command += " add" + i;
-		}
-		try {
-			Process p = Runtime.getRuntime().exec(command);
+			int b = Runtime.getRuntime().exec(command, null, new File(filepath)).waitFor();
 			System.out.println(command);
-			InputStream is = p.getInputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					is));
-			String line = null;
-			//MyPrintStream printStream = new MyPrintStream(System.out, text);
-			//System.setOut(printStream);
-			//System.setErr(printStream);
-			while ((line = in.readLine()) != null) {
-				System.out.println(line);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Run this command:" + command
-					+ "cause Exception ,and the message is " + e.getMessage());
+			System.out.println("run: "+b);
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
