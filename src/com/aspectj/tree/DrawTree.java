@@ -7,6 +7,7 @@ import org.eclipse.jface.action.MenuManager;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -42,10 +43,13 @@ public class DrawTree {
 
 	Text ruleInput = null;
 	TreeFilter filter = null;
+	ScrolledComposite scrolledComposite = null;
+	Composite parentComposite = null;
 	
 	public void createComposite() {
 		// Ìí¼ÓÎÄ±¾±à¼­ÇøÓò
 		composite = new Composite(shell, SWT.BORDER);
+		
 		GridData compositeData = new GridData(GridData.FILL_VERTICAL);
 		compositeData.widthHint = 110;
 		composite.setLayout(new GridLayout());
@@ -71,14 +75,19 @@ public class DrawTree {
 
 	public void createCompositeImage() {
 		// Ìí¼ÓÍ¼Æ¬ÏÔÊ¾ÇøÓò
-		compositeImage = new Composite(shell, SWT.BORDER);
+		parentComposite = new Composite(shell, SWT.BORDER);
+		parentComposite.setLayout(new FillLayout());
+		scrolledComposite = new ScrolledComposite(parentComposite,  SWT.H_SCROLL|SWT.V_SCROLL);
+		compositeImage = new Composite(scrolledComposite, SWT.BORDER);
+		scrolledComposite.setContent(compositeImage);
 		GridData compositeImageData = new GridData(GridData.FILL_VERTICAL);
 		final Image img = new Image(this.display,
 				"src/com/aspectj/tree/example.png");
 		final Rectangle bounds = img.getBounds();
 		final int picwidth = bounds.width;// Í¼Æ¬¿í
 		final int picheight = bounds.height;// Í¼Æ¬¸ß
-		compositeImageData.widthHint = picwidth+20;
+		//compositeImageData.widthHint = picwidth+20;
+		compositeImageData.widthHint = 800;
 		Canvas canvas = new Canvas(compositeImage, SWT.NONE);
 		GridData canvasData = new GridData(GridData.FILL_BOTH);
 		canvasData.widthHint = picwidth+20;
@@ -90,7 +99,13 @@ public class DrawTree {
 			}
 		});
 		compositeImage.setLayout(new GridLayout());
-		compositeImage.setLayoutData(compositeImageData);
+		parentComposite.setLayoutData(compositeImageData);
+		scrolledComposite.setExpandHorizontal(true);
+	    scrolledComposite.setExpandVertical(true);
+	    scrolledComposite.setMinWidth(picwidth+100);
+	    scrolledComposite.setMinHeight((picheight+100)>600 ? (picheight+100):600);
+		
+		
 	}
 
 	private DrawTree(xmlResultTreeNode rootNode) {
