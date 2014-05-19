@@ -294,7 +294,6 @@ public class Editor {
 		consoleText.setLayoutData(textFormData);
 		MyPrintStream printStream = new MyPrintStream(System.out, consoleText);
 		System.setOut(printStream);
-		System.out.println("测试输出重定向");
 	}
 
 	public static void createMenu() {
@@ -1028,7 +1027,7 @@ public class Editor {
 							    SWT.OK| 
 							    SWT.CANCEL| 
 							    SWT.ICON_WARNING); 
-							 messageBox.setMessage("您还未执行任何操作！"); 
+							 messageBox.setMessage("您还未执行任何操作或者已经初始化！"); 
 							 messageBox.open(); 
 				   }
 			   }

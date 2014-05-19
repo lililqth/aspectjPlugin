@@ -45,7 +45,7 @@ public class addcode {
 				    SWT.OK| 
 				    SWT.CANCEL| 
 				    SWT.ICON_WARNING); 
-				 messageBox.setMessage("aj文件生成！"); 
+				 messageBox.setMessage("aj鏂囦欢鐢熸垚鎴愬姛"); 
 				 messageBox.open(); 
 	}
 }
