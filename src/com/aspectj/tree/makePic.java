@@ -70,8 +70,10 @@ public class makePic {
 			return;
 		}
 		for (TreeItem childItem : childrenItems) {
-			String leftName = getline(item, 4);
-			String rightName = getline(childItem, 4);
+//			String leftName = getline(item, 4);
+//			String rightName = getline(childItem, 4);
+			String leftName = "\""+item.getText()+"\"";
+			String rightName = "\""+childItem.getText()+"\"";
 			String num = getline(childItem, 6);
 			String s = Integer.valueOf(num) > 1 ? "time" : "times";
 			String line = leftName + " -> " + rightName + "[label=\"" + num

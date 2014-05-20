@@ -79,15 +79,17 @@ public class DrawTree {
 		parentComposite.setLayout(new FillLayout());
 		scrolledComposite = new ScrolledComposite(parentComposite,  SWT.H_SCROLL|SWT.V_SCROLL);
 		compositeImage = new Composite(scrolledComposite, SWT.BORDER);
+		compositeImage.setLayout(new GridLayout());
 		scrolledComposite.setContent(compositeImage);
 		GridData compositeImageData = new GridData(GridData.FILL_VERTICAL);
+		compositeImageData.widthHint = 800;
 		final Image img = new Image(this.display,
 				"src/com/aspectj/tree/example.png");
 		final Rectangle bounds = img.getBounds();
 		final int picwidth = bounds.width;// Í¼Æ¬¿í
 		final int picheight = bounds.height;// Í¼Æ¬¸ß
 		//compositeImageData.widthHint = picwidth+20;
-		compositeImageData.widthHint = 800;
+		
 		Canvas canvas = new Canvas(compositeImage, SWT.NONE);
 		GridData canvasData = new GridData(GridData.FILL_BOTH);
 		canvasData.widthHint = picwidth+20;
@@ -98,12 +100,11 @@ public class DrawTree {
 				e.gc.drawImage(img, 10 , (550 - picheight)/2);
 			}
 		});
-		compositeImage.setLayout(new GridLayout());
-		parentComposite.setLayoutData(compositeImageData);
 		scrolledComposite.setExpandHorizontal(true);
 	    scrolledComposite.setExpandVertical(true);
 	    scrolledComposite.setMinWidth(picwidth+100);
 	    scrolledComposite.setMinHeight((picheight+100)>600 ? (picheight+100):600);
+		parentComposite.setLayoutData(compositeImageData);
 		
 		
 	}

@@ -25,7 +25,7 @@ class MyTableLableProvider implements ITableLabelProvider{
     	String funcName = null;
     	String argsString = null;
     	int functionNum = 0;
-    	Pattern p = Pattern.compile("^(public|private|protected) (static )+(.*) (.*)\\.(.*)\\((.*)\\)$");
+    	Pattern p = Pattern.compile("^(public |private |protected )?(static )?(.*) (.*)\\.(.*)\\((.*)\\)$");
     	Matcher m1 = p.matcher(fullName);
     	while (m1.find()) {
 			acccessLevel = m1.group(1);

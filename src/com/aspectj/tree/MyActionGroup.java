@@ -73,7 +73,7 @@ public class MyActionGroup extends ActionGroup {
 		}
 
 		public void run() {
-			if (drawTre.composite == null) {
+			if (drawTre.parentComposite == null) {
 				drawTre.createComposite();
 				drawTre.shell.setSize(drawTre.shell.getSize().x+100, drawTre.shell.getSize().y);
 				drawTre.shell.layout(true);
@@ -88,9 +88,9 @@ public class MyActionGroup extends ActionGroup {
 		}
 
 		public void run() {
-			if (drawTre.composite != null) {
-				drawTre.composite.dispose();
-				drawTre.composite = null;
+			if (drawTre.parentComposite != null) {
+				drawTre.parentComposite.dispose();
+				drawTre.parentComposite = null;
 				drawTre.shell.setSize(drawTre.shell.getSize().x-100, drawTre.shell.getSize().y);
 				drawTre.shell.layout(true);
 			}
