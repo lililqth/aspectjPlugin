@@ -133,7 +133,7 @@ public class AnalysisTool {
 		
 		ArrayList<xmlResultTreeNode> resultNodes = new ArrayList<xmlResultTreeNode>();
 		Stack<xmlResultTreeNode> tmpStack = new Stack<xmlResultTreeNode>();
-		xmlResultTreeNode root = new xmlResultTreeNode("SuperRoot");
+		xmlResultTreeNode root = new xmlResultTreeNode("void root.superroot()");
 		tmpStack.push(root);
 		resultNodes.add(root);
 		

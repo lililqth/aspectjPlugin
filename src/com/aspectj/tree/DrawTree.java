@@ -8,6 +8,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -46,7 +48,8 @@ public class DrawTree {
 	TreeFilter filter = null;
 	ScrolledComposite scrolledComposite = null;
 	Composite parentComposite = null;
-	
+	int displayWidth ;
+	int displayHeight ;
 	public void createComposite() {
 		// 添加文本编辑区域
 		composite = new Composite(shell, SWT.BORDER);
@@ -99,27 +102,32 @@ public class DrawTree {
 		//compositeImage.setLayout(new GridLayout());
 		compositeImage.setLayout(new FillLayout());
 		scrolledComposite.setContent(compositeImage);
-//		GridData compositeImageData = new GridData(GridData.FILL_VERTICAL);
-//		compositeImageData.widthHint = 800;
-//		compositeImage.setLayoutData(compositeImageData);
-		compositeImage.addPaintListener(new PaintListener() {
-			
-			@Override
-			public void paintControl(PaintEvent e) {
-				// TODO Auto-generated method stub
-				e.gc.drawImage(img, 10, 10);
-			}
-		});
+		GridData compositeImageData = new GridData(GridData.FILL_VERTICAL);
+		compositeImageData.widthHint = 800;
+		compositeImage.setLayoutData(compositeImageData);
+//		compositeImage.addPaintListener(new PaintListener() {
+//			
+//			@Override
+//			public void paintControl(PaintEvent e) {
+//				// TODO Auto-generated method stub
+//				e.gc.drawImage(img, 10, 10);
+//			}
+//		});
+//		
 		//画布
-//		Canvas canvas = new Canvas(compositeImage, SWT.NONE);
+		final Canvas canvas = new Canvas(compositeImage, SWT.NONE);
 //		GridData canvasData = new GridData(GridData.FILL_BOTH);
 //		canvasData.widthHint = picwidth+20;
 //		canvasData.heightHint = 600;
 //		canvas.setLayoutData(canvasData);
-//		canvas.addPaintListener(new PaintListener() {
-//			public void paintControl(PaintEvent e) {
-//				e.gc.drawImage(img, 10 , (550 - picheight)/2);}
-//		});
+		displayWidth = img.getImageData().width;
+		displayHeight = img.getImageData().height;
+		canvas.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				e.gc.drawImage(img, 0 , 0, img.getImageData().width,
+						img.getImageData().height, 10, 10, displayWidth, displayHeight);}
+		});
+		canvas.forceFocus();
 	}
 	private DrawTree(xmlResultTreeNode rootNode) {
 		
