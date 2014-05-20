@@ -96,7 +96,8 @@ public class makePic {
 		// String type = "pdf";
 		// String type = "ps";
 		// String type = "svg"; // open with inkscape
-		String type = "png";
+		//String type = "png";
+		String type = "jpg";
 		// File out = new File("/tmp/out." + type); // Linux
 		File out = new File("src/com/aspectj/tree/example." + type); // Windows
 		gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), type), out);

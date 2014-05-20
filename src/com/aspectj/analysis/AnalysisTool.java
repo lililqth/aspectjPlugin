@@ -133,6 +133,10 @@ public class AnalysisTool {
 		
 		ArrayList<xmlResultTreeNode> resultNodes = new ArrayList<xmlResultTreeNode>();
 		Stack<xmlResultTreeNode> tmpStack = new Stack<xmlResultTreeNode>();
+		xmlResultTreeNode root = new xmlResultTreeNode("SuperRoot");
+		tmpStack.push(root);
+		resultNodes.add(root);
+		
 		String nodeContent = bReader.readLine();
 		// while ((nodeContent != null)&&(!nodeContent.equals(""))) {
 		while (nodeContent != null) {

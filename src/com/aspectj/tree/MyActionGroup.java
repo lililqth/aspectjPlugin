@@ -73,7 +73,7 @@ public class MyActionGroup extends ActionGroup {
 		}
 
 		public void run() {
-			if (drawTre.parentComposite == null) {
+			if (drawTre.composite == null) {
 				drawTre.createComposite();
 				drawTre.shell.setSize(drawTre.shell.getSize().x+100, drawTre.shell.getSize().y);
 				drawTre.shell.layout(true);
@@ -88,9 +88,9 @@ public class MyActionGroup extends ActionGroup {
 		}
 
 		public void run() {
-			if (drawTre.parentComposite != null) {
-				drawTre.parentComposite.dispose();
-				drawTre.parentComposite = null;
+			if (drawTre.composite != null) {
+				drawTre.composite.dispose();
+				drawTre.composite = null;
 				drawTre.shell.setSize(drawTre.shell.getSize().x-100, drawTre.shell.getSize().y);
 				drawTre.shell.layout(true);
 			}
@@ -102,7 +102,7 @@ public class MyActionGroup extends ActionGroup {
 			setText("展开图形显示");
 		}
 		public void run() {
-			if(drawTre.compositeImage == null) {
+			if(drawTre.parentComposite == null) {
 				drawTre.createCompositeImage();
 				//drawTre.shell.setSize(drawTre.shell.getSize().x+400, drawTre.shell.getSize().y);
 				drawTre.shell.layout(true);
@@ -114,9 +114,9 @@ public class MyActionGroup extends ActionGroup {
 			setText("关闭图形显示");
 		}
 		public void run() {
-			if(drawTre.compositeImage != null) {
-				drawTre.compositeImage.dispose();
-				drawTre.compositeImage = null;
+			if(drawTre.parentComposite != null) {
+				drawTre.parentComposite.dispose();
+				drawTre.parentComposite = null;
 				//drawTre.shell.setSize(drawTre.shell.getSize().x-400, drawTre.shell.getSize().y);
 				drawTre.shell.layout(true);
 			}

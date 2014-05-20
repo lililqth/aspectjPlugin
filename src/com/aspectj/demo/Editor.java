@@ -69,6 +69,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Group;
+import org.jeditor.gui.JEditor;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -107,7 +108,7 @@ public class Editor {
 	private static String mainjava = null;
 	private static String list[]; //保存函数的名字
 	private static int functiontime[]; //保存了对应函数出现的次数
-	private static int functionlenth = 0;              //保存着函数的个数
+	private static int functionlenth = 0; //保存着函数的个数
 	static ArrayList<xmlResultTreeNode> result = null;
 	static ArrayList<ValueChangePoint> variatelog = null;
 	public static String getmainjava(){
@@ -759,7 +760,7 @@ public class Editor {
 		// 文本输入框
 		final Text insertText  = new Text(insertGroup, SWT.V_SCROLL | SWT.BORDER | SWT.H_SCROLL);
 		final FormData textFormData = new FormData();
-		textFormData.top = new FormAttachment(35, 0);
+		textFormData.top = new FormAttachment(45, 0);
 		textFormData.left = new FormAttachment(5, 0);
 		textFormData.right = new FormAttachment(95, 0);
 		textFormData.bottom = new FormAttachment(75, 0);
@@ -791,6 +792,25 @@ public class Editor {
 		wayComboFormData.bottom = new FormAttachment(30, 0);
 		wayCombo.setLayoutData(wayComboFormData);
 				
+		//快速插入下拉框
+		final Combo insertCombo = new Combo(insertGroup, SWT.DROP_DOWN|SWT.READ_ONLY);
+		insertCombo.add("System.out.println(\"hello\")");
+//		insertCombo.add("System.out.println("")");
+//		insertCombo.add("after( Formals ) throwing [ ( Formal ) ]");
+//		insertCombo.add("after( Formals )");
+//		insertCombo.add("Type around( Formals )");
+		insertCombo.setText("System.out.println(\"hello\")");
+		final FormData insertComboFormData = new FormData();
+		insertComboFormData.top = new FormAttachment(35, 0);
+		insertComboFormData.left = new FormAttachment(5, 0);
+		insertComboFormData.right = new FormAttachment(95, 0);
+		insertComboFormData.bottom = new FormAttachment(45, 0);
+		insertCombo.setLayoutData(insertComboFormData);
+		insertCombo.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e){ //按钮的单击事件
+				insertText.setText(insertCombo.getText());
+			}});
+		
 		Label activeLabel = new Label(insertGroup, SWT.NONE);
 		activeLabel.setText("Active");
 		final FormData activeLabelFormData = new FormData();

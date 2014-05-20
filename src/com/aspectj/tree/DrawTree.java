@@ -14,6 +14,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -74,41 +75,52 @@ public class DrawTree {
 	}
 
 	public void createCompositeImage() {
-		// 添加图片显示区域
-		parentComposite = new Composite(shell, SWT.BORDER);
-		parentComposite.setLayout(new FillLayout());
-		scrolledComposite = new ScrolledComposite(parentComposite,  SWT.H_SCROLL|SWT.V_SCROLL);
-		compositeImage = new Composite(scrolledComposite, SWT.BORDER);
-		compositeImage.setLayout(new GridLayout());
-		scrolledComposite.setContent(compositeImage);
-		GridData compositeImageData = new GridData(GridData.FILL_VERTICAL);
-		compositeImageData.widthHint = 800;
+		//要打开的图片
 		final Image img = new Image(this.display,
-				"src/com/aspectj/tree/example.png");
+				"src/com/aspectj/tree/example.jpg");
 		final Rectangle bounds = img.getBounds();
 		final int picwidth = bounds.width;// 图片宽
 		final int picheight = bounds.height;// 图片高
-		//compositeImageData.widthHint = picwidth+20;
-		
-		Canvas canvas = new Canvas(compositeImage, SWT.NONE);
-		GridData canvasData = new GridData(GridData.FILL_BOTH);
-		canvasData.widthHint = picwidth+20;
-		canvasData.heightHint = 600;
-		canvas.setLayoutData(canvasData);
-		canvas.addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				e.gc.drawImage(img, 10 , (550 - picheight)/2);
-			}
-		});
+		//父容器  fillLayout
+		parentComposite = new Composite(shell, SWT.BORDER);
+		parentComposite.setLayout(new FillLayout());
+		GridData parentCompositeGridData = new GridData(GridData.FILL_VERTICAL);
+		parentCompositeGridData.widthHint = 810;
+		parentComposite.setLayoutData(parentCompositeGridData);
+		//滚动容器
+		scrolledComposite = new ScrolledComposite(parentComposite,  SWT.H_SCROLL|SWT.V_SCROLL);
+		scrolledComposite.setLayout(new GridLayout());
 		scrolledComposite.setExpandHorizontal(true);
 	    scrolledComposite.setExpandVertical(true);
 	    scrolledComposite.setMinWidth(picwidth+100);
 	    scrolledComposite.setMinHeight((picheight+100)>600 ? (picheight+100):600);
-		parentComposite.setLayoutData(compositeImageData);
-		
-		
+		//图片容器
+		compositeImage = new Composite(scrolledComposite, SWT.BORDER);
+		//compositeImage.setLayout(new GridLayout());
+		compositeImage.setLayout(new FillLayout());
+		scrolledComposite.setContent(compositeImage);
+//		GridData compositeImageData = new GridData(GridData.FILL_VERTICAL);
+//		compositeImageData.widthHint = 800;
+//		compositeImage.setLayoutData(compositeImageData);
+		compositeImage.addPaintListener(new PaintListener() {
+			
+			@Override
+			public void paintControl(PaintEvent e) {
+				// TODO Auto-generated method stub
+				e.gc.drawImage(img, 10, 10);
+			}
+		});
+		//画布
+//		Canvas canvas = new Canvas(compositeImage, SWT.NONE);
+//		GridData canvasData = new GridData(GridData.FILL_BOTH);
+//		canvasData.widthHint = picwidth+20;
+//		canvasData.heightHint = 600;
+//		canvas.setLayoutData(canvasData);
+//		canvas.addPaintListener(new PaintListener() {
+//			public void paintControl(PaintEvent e) {
+//				e.gc.drawImage(img, 10 , (550 - picheight)/2);}
+//		});
 	}
-
 	private DrawTree(xmlResultTreeNode rootNode) {
 		
 		head = rootNode;
@@ -158,7 +170,7 @@ public class DrawTree {
 		root.setExpanded(true);
 
 		// 遍历arraylist并生成树
-		traverse(head, root);
+		traverse(head, root); 
 		makePic pic = new makePic(this);
 		shell.setSize(920, 600);
 		shell.open();
@@ -218,18 +230,19 @@ public class DrawTree {
 	void traverse(xmlResultTreeNode head, TreeItem item) {
 		item.setText(head.getName());
 		int childNum = head.getNumOfChild();
+		System.out.println(head.getName());
+		System.out.println("当前节点有孩子："+childNum+"个");
 		if (childNum == 0) {
 			return;
 		}
 		for (int i = 0; i < childNum; i++) {
 			xmlResultTreeNode node = head.getChild(i);
+			System.out.println(i+" =====> "+node.getName());
 			TreeItem subItem = new TreeItem(item, SWT.CHECK);
-			//subItem.setText(node.getName());
 			subItem.setExpanded(true);
-			// subItem.setImage(new Image(display,
-			// "F://javaworkspace//src//1.gif"));
 			traverse(node, subItem);
 		}
+		System.out.println();
 	}
 
 	class MakeFilt extends SelectionAdapter {
