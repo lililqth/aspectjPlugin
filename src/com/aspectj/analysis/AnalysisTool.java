@@ -1,7 +1,9 @@
 package com.aspectj.analysis;
 
+import java.awt.List;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.regex.*;
 
@@ -223,5 +225,24 @@ public class AnalysisTool {
 			}
 		}
 		return funcArrayList;
+	}
+	
+	public static HashMap<String, Integer> getFunctionMapFromXml(String filepath) throws IOException {
+		HashMap<String, Integer> result = new HashMap<>();
+		BufferedReader br = new BufferedReader(new FileReader(new File(filepath)));
+		String tmpString = br.readLine();
+		while (tmpString != null) {
+			if (tmpString.startsWith("<start>")) {
+				String functionName = tmpString.replaceAll("<start>", "").replace("</start>", "");
+				Integer functionTime = result.get(functionName);
+				if (functionTime != null) {
+					result.put(functionName, functionTime + 1);
+				} else {
+					result.put(functionName, 1);
+				}
+			}
+		}
+		
+		return result;
 	}
 }

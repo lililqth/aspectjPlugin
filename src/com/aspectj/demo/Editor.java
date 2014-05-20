@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import javax.swing.tree.DefaultTreeModel;
@@ -104,8 +105,8 @@ public class Editor {
 	private static String parentpath = "E:"; //文件路径
 	private static String javaname = null;
 	private static String mainjava = null;
-	private static String list[] = new String[1000]; //保存函数的名字
-	private static int functiontime[] = new int[1000]; //保存了对应函数出现的次数
+	private static String list[]; //保存函数的名字
+	private static int functiontime[]; //保存了对应函数出现的次数
 	private static int functionlenth = 0;              //保存着函数的个数
 	static ArrayList<xmlResultTreeNode> result = null;
 	static ArrayList<ValueChangePoint> variatelog = null;
@@ -359,7 +360,23 @@ public class Editor {
 					e1.printStackTrace();
 				}
 				
+//				try {
+//					HashMap<String, Integer> tmpHashMap = AnalysisTool.getFunctionMapFromXml(pathname);
+//					list = new String[tmpHashMap.keySet().size()];
+//					functiontime = new int[list.length];
+//					int i = 0;
+//					for (String function : tmpHashMap.keySet()) {
+//						list[i] = function;
+//						functiontime[i] = tmpHashMap.get(function);
+//						i++;
+//					}
+//				} catch (IOException e2) {
+//					// TODO Auto-generated catch block
+//					e2.printStackTrace();
+//				}
 				
+				list = new String[100000];
+				functiontime = new int[100000];
 				//System.out.println(pathname);
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				try
