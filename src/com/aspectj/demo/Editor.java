@@ -6,11 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
@@ -83,9 +86,17 @@ import com.aspectj.run.Run;
 import com.aspectj.tree.DrawTree;
 import com.aspectj.tree.xmlResultTreeNode;
 
+class Resource{
+	public InputStream getResource(String name) throws IOException{
+		 InputStream fileURL=this.getClass().getResourceAsStream(name);
+		 return fileURL;
+	     //System.out.println(fileURL.getFile());  
+	}
+}
 public class Editor {
 	
 	//控件变量列表
+	public static String[] MyArgs;
 	public static Shell shell = null;
 	private static TabFolder tabFolder = null;
 	private static TabFolder fileTabFolder = null;
@@ -98,8 +109,8 @@ public class Editor {
 	static File rootDir = null;
 	static Tree tree = null;
 	static ImageRegistry imageRegistry;
-	static Image iconFolder = null;
-	static Image iconFile = null;
+	static Image  iconFolder = null;
+	static Image  iconFile = null;
 
 	//文件参数列表
 	private static String packagename;//保存着包的名字
@@ -111,6 +122,7 @@ public class Editor {
 	private static int functionlenth = 0; //保存着函数的个数
 	static ArrayList<xmlResultTreeNode> result = null;
 	static ArrayList<ValueChangePoint> variatelog = null;
+	static String initDir; 
 	public static String getmainjava(){
 		return mainjava;
 	}
@@ -267,23 +279,23 @@ public class Editor {
 		//打开文件对话框，返回选中文件夹目录
 		String selecteddir=folderdlg.open();
 		if(selecteddir==null){
-		return ;
+			return ;
 		}
 		else{
-		parentpath = selecteddir;
-		setRootDir(new File(selecteddir));
-		System.out.println("您选中的文件夹目录为："+selecteddir);
-		ArrayList <String> temp = findpackage.getPackageStrings(selecteddir);
-		
-		packagename = parentpath + "\\*.java ";
-		
-		for(int i = 0; i < temp.size();i++){
-				packagename += " "+ parentpath +"\\"+ temp.get(i) + "\\*.java";
+			parentpath = selecteddir;
+			setRootDir(new File(selecteddir));
+			System.out.println("您选中的文件夹目录为："+selecteddir);
+			ArrayList <String> temp = findpackage.getPackageStrings(selecteddir);
+			
+			packagename = parentpath + "\\*.java ";
+			
+			for(int i = 0; i < temp.size();i++){
+					packagename += " "+ parentpath +"\\"+ temp.get(i) + "\\*.java";
+			}
+			
+			System.out.println(parentpath + "  "+ temp.size());
 		}
-		
-		System.out.println(parentpath + "  "+ temp.size());
-		}
-		}
+	}
 
 	
 	public static void createConsole() {
@@ -331,7 +343,12 @@ public class Editor {
 			public void widgetSelected(SelectionEvent e) {
 				if(javaname != null){
 					System.out.println(javaname);
-					AnalysisTool.analysis(javaname);
+					try {
+						AnalysisTool.analysis(javaname);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 				else {
 					MessageBox messageBox = 
@@ -563,7 +580,7 @@ public class Editor {
 		if ((!root.isDirectory()) || (!root.exists()))
 			throw new IllegalArgumentException("Invalid root: " + root);
 		rootDir = root;
-		shell.setText("Aspectj Plugin");
+		
 		if (tree.getItemCount() > 0) {
 			TreeItem[] items = tree.getItems();
 			for (int i = 0; i < items.length; i++) {
@@ -582,7 +599,7 @@ public class Editor {
 		if (lastDotPos == -1)
 			return iconFile;
 		Image image = getIcon(file.getName().substring(lastDotPos + 1));
-		return image == null ? iconFile : image;
+		return (image == null ? iconFile : image);
 	}
 
 	private static Image getIcon(String extension) {
@@ -624,9 +641,12 @@ public class Editor {
 		}
 	}
 
-	public static void createFileTree() {
-		iconFolder = new Image(shell.getDisplay(), "src/com/aspectj/demo/folder.gif");
-		iconFile = new Image(shell.getDisplay(), "src/com/aspectj/demo/file.gif");
+	public static void createFileTree() throws IOException {
+		Resource res = new Resource();
+//		FolderIcon = new Image(res.getResource("/resources/folder.gif"));
+//		FileIcon = new Image ( res.getResource("/resources/file.gif"));
+		iconFolder = new Image(shell.getDisplay(),res.getResource("/resources/folder.gif"));
+		iconFile = new Image(shell.getDisplay(),res.getResource("/resources/file.gif"));
 		fileTabFolder = new TabFolder(shell, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.CANCEL | SWT.MULTI);
 		//在这个tab中显示函数列表
@@ -649,7 +669,7 @@ public class Editor {
 		fileFormData.bottom = new FormAttachment(100, -5);
 		fileTabFolder.setLayoutData(fileFormData);
 
-		setRootDir(new File("C:"));
+		setRootDir(new File(initDir));
 		tree.addTreeListener(new TreeListener() {
 			public void treeCollapsed(TreeEvent e) {
 			}
@@ -794,7 +814,7 @@ public class Editor {
 				
 		//快速插入下拉框
 		final Combo insertCombo = new Combo(insertGroup, SWT.DROP_DOWN|SWT.READ_ONLY);
-		insertCombo.add("System.out.println(\"hello\")");
+		insertCombo.add("System.out.println(\"hello\");");
 //		insertCombo.add("System.out.println("")");
 //		insertCombo.add("after( Formals ) throwing [ ( Formal ) ]");
 //		insertCombo.add("after( Formals )");
@@ -1101,15 +1121,24 @@ public class Editor {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		
+		if(args.length != 0)
+		{
+			initDir = args[0];
+			MyArgs = args;
+		}
+		else {
+			initDir = "D:/Desktop/Test/src";
+		}
 		display = Display.getDefault();
 		font = Display.getDefault().getSystemFont();
 		fontColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 		shell = new Shell();
 		shell.setSize(653, 414);
-		shell.setText("编辑");
+		//shell.setText("编辑");
 		shell.setLayout(new FormLayout());
-		
+		shell.setText("Aspectj Plugin");
 		// 目录树
 		createFileTree();
 		
@@ -1134,6 +1163,18 @@ public class Editor {
 		shell.open();
 		shell.layout();
 		
+		parentpath = initDir;
+		setRootDir(new File(initDir));
+		System.out.println("您选中的文件夹目录为："+initDir);
+		ArrayList <String> temp = findpackage.getPackageStrings(initDir);
+		
+		packagename = parentpath + "\\*.java ";
+		
+		for(int i = 0; i < temp.size();i++){
+				packagename += " "+ parentpath +"\\"+ temp.get(i) + "\\*.java";
+		}
+		
+		System.out.println(parentpath + "  "+ temp.size());
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
@@ -1143,4 +1184,3 @@ public class Editor {
 	}
 	
 }
-

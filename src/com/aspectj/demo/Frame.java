@@ -489,7 +489,12 @@ public class Frame extends JFrame {
 //					list_1.add(filepath);
 //					choice.add(filepath);
 //					choice.add(filepath);
-					AnalysisTool.analysis(filepath);
+					try {
+						AnalysisTool.analysis(filepath);
+					} catch (IOException e3) {
+						// TODO Auto-generated catch block
+						e3.printStackTrace();
+					}
 					
 					File currentFile = new File(filepath.substring(0, filepath.lastIndexOf('\\')));
 					File[] roots = currentFile.listFiles();

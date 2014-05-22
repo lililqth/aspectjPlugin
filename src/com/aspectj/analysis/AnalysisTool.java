@@ -2,26 +2,66 @@ package com.aspectj.analysis;
 
 import java.awt.List;
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.regex.*;
 
+import sun.util.ResourceBundleEnumeration;
+
 import com.aspectj.demo.Editor;
 import com.aspectj.demo.Frame;
 import com.aspectj.tree.xmlResultTreeNode;
 
+class Resource{
+	public InputStream getResource(String name) throws IOException{
+		InputStream fileURL=this.getClass().getResourceAsStream(name);
+		 return fileURL;
+	     //System.out.println(fileURL.getFile());  
+	}
+}
 public class AnalysisTool {
     /** copyFile
      *  复制文件
      * @param source 源文件路径（包含文件名）
      * @param target 目标文件路径（包含文件名）
      */
+	
 	public static void copyFile(File source, File target) {	
 		InputStream fis = null;
         OutputStream fos = null;
         try {
             fis = new BufferedInputStream(new FileInputStream(source));
+            fos = new BufferedOutputStream(new FileOutputStream(target));
+            byte[] buf = new byte[4096];
+            int i;
+            while ((i = fis.read(buf)) != -1) {
+                fos.write(buf, 0, i);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+            try {
+				fos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }
+		return;
+	}
+	
+	public static void copyFile(InputStream sourceInputStream, File target) {	
+		InputStream fis = null;
+        OutputStream fos = null;
+        try {
+            fis = new BufferedInputStream(sourceInputStream);
             fos = new BufferedOutputStream(new FileOutputStream(target));
             byte[] buf = new byte[4096];
             int i;
@@ -85,8 +125,10 @@ public class AnalysisTool {
 	/** analysis
 	 * 分析用函数
 	 * @param pathname 要分析的目标文件
+	 * @throws IOException 
 	 */
-	public static void analysis(String pathname) {
+	
+	public static void analysis(String pathname) throws IOException {
 		
 		// Get filepath & filename
 		String filepath = Editor.getparentpath();
@@ -96,7 +138,9 @@ public class AnalysisTool {
 		String ajFileName = "aspectjanalysictempfile.aj";
 		
 		// copy analysis.aj to ajFileName
-		copyFile(new File("static/analysis.aj"), new File(filepath + "\\" + ajFileName));
+		Resource src = new Resource();
+		InputStream ajInputStream = src.getResource("/resources/analysis.txt");
+		copyFile(ajInputStream , new File(filepath + "\\" + ajFileName));
 		
 		// 判断 XML 是否存在，如果存在则删除。
 		File xmlResultFile = new File(filepath + "\\analysisResult.xml");

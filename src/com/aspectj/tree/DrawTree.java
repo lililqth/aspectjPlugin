@@ -80,7 +80,7 @@ public class DrawTree {
 	public void createCompositeImage() {
 		//要打开的图片
 		final Image img = new Image(this.display,
-				"src/com/aspectj/tree/example.jpg");
+				"example.jpg");
 		final Rectangle bounds = img.getBounds();
 		final int picwidth = bounds.width;// 图片宽
 		final int picheight = bounds.height;// 图片高

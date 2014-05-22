@@ -99,7 +99,7 @@ public class makePic {
 		//String type = "png";
 		String type = "jpg";
 		// File out = new File("/tmp/out." + type); // Linux
-		File out = new File("src/com/aspectj/tree/example." + type); // Windows
+		File out = new File("example." + type); // Windows
 		gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), type), out);
 	}
 

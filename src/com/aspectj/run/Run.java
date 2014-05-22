@@ -50,9 +50,21 @@ public class Run {
 		command = "cmd.exe /c java -cp bin;C:/aspectj1.7/lib/aspectjrt.jar " 
 				+ Editor.getmainjava().substring(0, Editor.getmainjava().indexOf(".java"));//+ filename.substring(0, filename.indexOf(".java"));
 		try {
-			int b = Runtime.getRuntime().exec(command, null, new File(filepath)).waitFor();
-			System.out.println(command);
-			System.out.println("run: "+b);
+			/*
+			 * int b = Runtime.getRuntime().exec(command, null, new
+			 * File(filepath)).waitFor(); System.out.println(command);
+			 * System.out.println("run: "+b);
+			 */
+			Process p = Runtime.getRuntime().exec(command, null,
+					new File(filepath));
+			p.waitFor();
+			InputStream is = p.getInputStream();
+			BufferedReader in = new BufferedReader(new InputStreamReader(is));
+			String line = null;
+			while ((line = in.readLine()) != null) {
+				System.out.println(line);
+			}
+
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
