@@ -819,7 +819,7 @@ public class Editor {
 //		insertCombo.add("after( Formals ) throwing [ ( Formal ) ]");
 //		insertCombo.add("after( Formals )");
 //		insertCombo.add("Type around( Formals )");
-		insertCombo.setText("System.out.println(\"hello\")");
+		insertCombo.setText("System.out.println(\"hello\");");
 		final FormData insertComboFormData = new FormData();
 		insertComboFormData.top = new FormAttachment(35, 0);
 		insertComboFormData.left = new FormAttachment(5, 0);
@@ -917,7 +917,7 @@ public class Editor {
 				try {
 					//variateTable.clearAll();
 					variateTable.removeAll();
-					ValueTracker.analysis(parentpath + "\\VT.xml");
+					ValueTracker.analysis(parentpath + "\\test.xml");
 					String nameOfVariate = variateText.getText();
 					variatelog = ValueTracker.getValueList(nameOfVariate);
 					for (int i = 0; i < variatelog.size(); i++) {
@@ -1160,6 +1160,7 @@ public class Editor {
 		createFunctionTab();
 //		addTab(null,
 //				"欢迎使用简易文本编辑器;本编辑器可以对小于1M的txt或html文件进行编辑\n\n该程序旨在演示打开文件对话框、menu、目录对话框、颜色对话框、字体对话框的使用方法\n\nFile菜单下有新建、打开、打开多个文件的功能，以及保存及另存为功能。\nclean为清除当前选项卡的内容，close为关闭当前选项卡，Font为选择字体（忽略颜色），FontColor为选择字体颜色（只对当前选项卡内容及之后打开的有效）");
+		shell.setBounds(Display.getDefault().getPrimaryMonitor().getBounds());
 		shell.open();
 		shell.layout();
 		
